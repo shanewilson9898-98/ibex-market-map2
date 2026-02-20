@@ -323,24 +323,26 @@
         script.onerror = () => { cleanup(); reject(new Error("Failed to load JSONP script")); };
         document.head.appendChild(script);
       });
-    }
-    function deriveDomain(rawUrl) {
-      try { return new URL(rawUrl).hostname.replace(/^www\./i, ""); } catch { return ""; }
-    }
-    function createLogoFallback(img, logoUrl, companyUrl) {
-      const candidates = [];
-      if (logoUrl) candidates.push(logoUrl);
-      const domain = deriveDomain(companyUrl);
-      if (domain) candidates.push("https://logo.clearbit.com/" + domain);
-      let i = 0;
-      return () => (i < candidates.length ? (img.src = candidates[i++], true) : false);
-    }
 
-    function makeCard(company) {
-      const name = String(company["Company Name"] || "").trim() || "Unknown";
-      const url = String(company["Url"] || "").trim();
-      const logo = String(company["Logo link"] || "").trim();
-      const about = String(company["About"] || "").trim();
+   function deriveDomain(rawUrl) {
+  const s = String(rawUrl || "").trim();
+  if (!s) return "";
+  const withScheme = /^[a-z]+:\/\//i.test(s) ? s : ("https://" + s);
+  try { return new URL(withScheme).hostname.replace(/^www\./i, ""); } catch { return ""; }
+}
+
+function createLogoFallback(img, logoUrl, companyUrl) {
+  const candidates = [];
+  if (logoUrl) candidates.push(logoUrl);
+  const domain = deriveDomain(companyUrl);
+  if (domain) {
+    candidates.push("https://logo.clearbit.com/" + domain);
+    candidates.push("https://www.google.com/s2/favicons?sz=128&domain=" + encodeURIComponent(domain));
+    candidates.push("https://icons.duckduckgo.com/ip3/" + encodeURIComponent(domain) + ".ico");
+  }
+  let i = 0;
+  return () => (i < candidates.length ? (img.src = candidates[i++], true) : false);
+
 
       const card = document.createElement("div");
       card.className = "card";
