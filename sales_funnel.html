@@ -82,14 +82,14 @@
     </div>
 
     <div class="section">
-      <div class="title"><span>Advanced to Diligence</span><span class="count" id="passed-count">0 companies</span></div>
+      <div class="title"><span>Passed on Investment</span><span class="count" id="passed-count">0 companies</span></div>
       <div class="grid" id="passed-grid"></div>
     </div>
 
     <div class="divider"></div>
 
     <div class="section">
-      <div class="title"><span>Passed on Investment</span><span class="count" id="not-passed-count">0 companies</span></div>
+      <div class="title"><span>Advanced to Diligence</span><span class="count" id="not-passed-count">0 companies</span></div>
       <div class="grid" id="not-passed-grid"></div>
     </div>
   </div>
@@ -181,7 +181,8 @@
         ) {
           return false;
         }
-        return /\.(png|jpe?g|webp|gif|svg|ico|bmp|avif)(?:$|[?#])/i.test(path);
+        if (path.includes("/profile") || path.includes("/people") || path.includes("/person") || path.includes("/company")) return false;
+        return true;
       } catch (e) {
         return false;
       }
@@ -194,6 +195,7 @@
 
       const domain = deriveDomain(company["Url"] || "");
       if (domain) {
+        out.push("https://logo.clearbit.com/" + domain);
         out.push("https://www.google.com/s2/favicons?sz=128&domain=" + encodeURIComponent(domain));
         out.push("https://icons.duckduckgo.com/ip3/" + encodeURIComponent(domain) + ".ico");
       }

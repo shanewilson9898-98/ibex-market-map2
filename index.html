@@ -213,7 +213,8 @@
         ) {
           return false;
         }
-        return /\.(png|jpe?g|webp|gif|svg|ico|bmp|avif)(?:$|[?#])/i.test(path);
+        if (path.includes("/profile") || path.includes("/people") || path.includes("/person") || path.includes("/company")) return false;
+        return true;
       } catch (e) {
         return false;
       }
@@ -226,6 +227,7 @@
 
       const domain = deriveDomain(companyUrl);
       if (domain) {
+        candidates.push("https://logo.clearbit.com/" + domain);
         candidates.push("https://www.google.com/s2/favicons?sz=128&domain=" + encodeURIComponent(domain));
         candidates.push("https://icons.duckduckgo.com/ip3/" + encodeURIComponent(domain) + ".ico");
       }
