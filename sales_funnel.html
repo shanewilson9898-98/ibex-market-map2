@@ -550,8 +550,11 @@
       setStatus("", "Loading data", "Fetching from Apps Script (JSONP)");
 
       const cbName = "handleMarketMapPayload_" + Math.random().toString(16).slice(2);
-      const url = `${CONFIG.endpointBase}?view=${encodeURIComponent(CONFIG.view)}&callback=${encodeURIComponent(cbName)}&t=${Date.now()}`;
-
+      const u = new URL(CONFIG.endpointBase);
+u.searchParams.set("view", CONFIG.view);
+u.searchParams.set("callback", cbName);
+u.searchParams.set("t", String(Date.now()));
+const url = u.toString();
       let payload;
       try { payload = await loadJsonp(url, cbName); }
       catch (err) { setStatus("error", "Failed to load data", String(err)); return; }
