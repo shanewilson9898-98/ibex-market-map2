@@ -186,21 +186,62 @@
       try { return new URL(withScheme).hostname.replace(/^www\./i, ""); } catch (e) { return ""; }
     }
 
+    function normalizeHttpUrl(rawUrl) {
+      const s = String(rawUrl || "").trim();
+      if (!s) return "";
+      const withScheme = /^[a-z]+:\/\//i.test(s) ? s : ("https://" + s);
+      try {
+        const u = new URL(withScheme);
+        if (!/^https?:$/i.test(u.protocol)) return "";
+        return u.toString();
+      } catch (e) {
+        return "";
+      }
+    }
+
+    function isDirectImageUrl(rawUrl) {
+      const u = normalizeHttpUrl(rawUrl);
+      if (!u) return false;
+      try {
+        const parsed = new URL(u);
+        const host = parsed.hostname.toLowerCase();
+        const path = parsed.pathname.toLowerCase();
+        if (
+          host.includes("linkedin.com") ||
+          host.includes("pitchbook.com") ||
+          host.includes("crunchbase.com")
+        ) {
+          return false;
+        }
+        return /\.(png|jpe?g|webp|gif|svg|ico|bmp|avif)(?:$|[?#])/i.test(path);
+      } catch (e) {
+        return false;
+      }
+    }
+
     function createLogoFallback(img, logoUrl, companyUrl) {
       const candidates = [];
-      if (logoUrl) candidates.push(logoUrl);
+      const logoCandidate = normalizeHttpUrl(logoUrl);
+      if (isDirectImageUrl(logoCandidate)) candidates.push(logoCandidate);
 
       const domain = deriveDomain(companyUrl);
       if (domain) {
-        candidates.push("https://logo.clearbit.com/" + domain);
         candidates.push("https://www.google.com/s2/favicons?sz=128&domain=" + encodeURIComponent(domain));
         candidates.push("https://icons.duckduckgo.com/ip3/" + encodeURIComponent(domain) + ".ico");
       }
 
+      const unique = [];
+      const seen = new Set();
+      candidates.forEach((c) => {
+        if (!c || seen.has(c)) return;
+        seen.add(c);
+        unique.push(c);
+      });
+
       let i = 0;
       return () => {
-        if (i >= candidates.length) return false;
-        img.src = candidates[i++];
+        if (i >= unique.length) return false;
+        img.src = unique[i++];
         return true;
       };
     }
@@ -322,7 +363,7 @@
 
       const cb = "cb_" + Math.random().toString(16).slice(2);
       const url = buildApiUrl(CONFIG.endpointBase, {
-        view: CONFIG.view,
+        view: "marketmap",
         callback: cb,
         t: String(Date.now())
       });

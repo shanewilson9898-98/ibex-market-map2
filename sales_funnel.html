@@ -82,14 +82,14 @@
     </div>
 
     <div class="section">
-      <div class="title"><span>Above the Line: Passed</span><span class="count" id="passed-count">0 companies</span></div>
+      <div class="title"><span>Advanced to Diligence</span><span class="count" id="passed-count">0 companies</span></div>
       <div class="grid" id="passed-grid"></div>
     </div>
 
     <div class="divider"></div>
 
     <div class="section">
-      <div class="title"><span>Below the Line: Not Passed</span><span class="count" id="not-passed-count">0 companies</span></div>
+      <div class="title"><span>Passed on Investment</span><span class="count" id="not-passed-count">0 companies</span></div>
       <div class="grid" id="not-passed-grid"></div>
     </div>
   </div>
@@ -148,16 +148,57 @@
       return ["1","true","yes","y","passed"].includes(v);
     }
 
+    function normalizeHttpUrl(rawUrl) {
+      const s = String(rawUrl || "").trim();
+      if (!s) return "";
+      const withScheme = /^[a-z]+:\/\//i.test(s) ? s : ("https://" + s);
+      try {
+        const u = new URL(withScheme);
+        if (!/^https?:$/i.test(u.protocol)) return "";
+        return u.toString();
+      } catch (e) {
+        return "";
+      }
+    }
+
+    function deriveDomain(rawUrl) {
+      const u = normalizeHttpUrl(rawUrl);
+      if (!u) return "";
+      try { return new URL(u).hostname.replace(/^www\./i, ""); } catch (e) { return ""; }
+    }
+
+    function isDirectImageUrl(rawUrl) {
+      const u = normalizeHttpUrl(rawUrl);
+      if (!u) return false;
+      try {
+        const parsed = new URL(u);
+        const host = parsed.hostname.toLowerCase();
+        const path = parsed.pathname.toLowerCase();
+        if (
+          host.includes("linkedin.com") ||
+          host.includes("pitchbook.com") ||
+          host.includes("crunchbase.com")
+        ) {
+          return false;
+        }
+        return /\.(png|jpe?g|webp|gif|svg|ico|bmp|avif)(?:$|[?#])/i.test(path);
+      } catch (e) {
+        return false;
+      }
+    }
+
     function logoCandidates(company) {
       const out = [];
-      const explicit = String(company["Logo link"] || "").trim();
-      if (explicit) out.push(explicit);
-      const site = String(company["Url"] || "").trim();
-      try {
-        const domain = new URL(site).hostname.replace(/^www\./, "");
-        if (domain) out.push("https://logo.clearbit.com/" + domain);
-      } catch (e) {}
-      return out;
+      const explicit = normalizeHttpUrl(company["Logo link"] || "");
+      if (isDirectImageUrl(explicit)) out.push(explicit);
+
+      const domain = deriveDomain(company["Url"] || "");
+      if (domain) {
+        out.push("https://www.google.com/s2/favicons?sz=128&domain=" + encodeURIComponent(domain));
+        out.push("https://icons.duckduckgo.com/ip3/" + encodeURIComponent(domain) + ".ico");
+      }
+
+      return [...new Set(out.filter(Boolean))];
     }
 
     function makeCard(company, passed) {
@@ -198,7 +239,7 @@
 
       const tag = document.createElement("div");
       tag.className = "tag";
-      tag.textContent = passed ? "Passed" : "Not Passed";
+      tag.textContent = passed ? "Advanced" : "Passed On";
 
       wrap.appendChild(img);
       wrap.appendChild(ph);
@@ -256,8 +297,8 @@
       passed.forEach(c => passedGrid.appendChild(makeCard(c, true)));
       notPassed.forEach(c => npGrid.appendChild(makeCard(c, false)));
 
-      if (!passed.length) passedGrid.innerHTML = '<div class="status">No passed companies in call executed.</div>';
-      if (!notPassed.length) npGrid.innerHTML = '<div class="status">No not-passed companies in call executed.</div>';
+      if (!passed.length) passedGrid.innerHTML = '<div class="status">No advanced companies in call executed.</div>';
+      if (!notPassed.length) npGrid.innerHTML = '<div class="status">No passed-on companies in call executed.</div>';
 
       setStatus("ok", "Loaded successfully.");
     }
