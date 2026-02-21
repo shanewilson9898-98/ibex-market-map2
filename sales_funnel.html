@@ -190,8 +190,10 @@
 
     function logoCandidates(company) {
       const out = [];
-      const explicit = normalizeHttpUrl(company["Logo link"] || "");
-      if (isDirectImageUrl(explicit)) out.push(explicit);
+      [company["Logo link"], company["logo"]].forEach((raw) => {
+        const explicit = normalizeHttpUrl(raw || "");
+        if (isDirectImageUrl(explicit)) out.push(explicit);
+      });
 
       const domain = deriveDomain(company["Url"] || "");
       if (domain) {

@@ -220,10 +220,13 @@
       }
     }
 
-    function createLogoFallback(img, logoUrl, companyUrl) {
+    function createLogoFallback(img, logoUrls, companyUrl) {
       const candidates = [];
-      const logoCandidate = normalizeHttpUrl(logoUrl);
-      if (isDirectImageUrl(logoCandidate)) candidates.push(logoCandidate);
+
+      (Array.isArray(logoUrls) ? logoUrls : [logoUrls]).forEach((logoUrl) => {
+        const logoCandidate = normalizeHttpUrl(logoUrl);
+        if (isDirectImageUrl(logoCandidate)) candidates.push(logoCandidate);
+      });
 
       const domain = deriveDomain(companyUrl);
       if (domain) {
@@ -251,7 +254,8 @@
     function makeCard(company) {
       const name = String(company["Company Name"] || "").trim() || "Unknown";
       const url = String(company["Url"] || "").trim();
-      const logo = String(company["Logo link"] || "").trim();
+      const logoLink = String(company["Logo link"] || "").trim();
+      const logoRaw = String(company["logo"] || "").trim();
       const about = String(company["About"] || "").trim();
 
       const card = document.createElement("div");
@@ -277,7 +281,7 @@
       placeholder.className = "placeholder";
       placeholder.textContent = name;
 
-      const tryNextLogo = createLogoFallback(img, logo, url);
+      const tryNextLogo = createLogoFallback(img, [logoLink, logoRaw], url);
 
       img.onload = () => {
         img.style.display = "block";
