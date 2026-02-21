@@ -46,6 +46,21 @@
     .name { font-size:12.5px; font-weight:700; color:#374151; line-height:1.25; }
     .tag { margin-top:6px; font-size:10px; text-transform:uppercase; font-weight:700; color:#5d2cc5; border:1px solid #ddd6fe; background:#f5f3ff; border-radius:999px; display:inline-block; padding:2px 7px; }
 
+    .tooltip {
+      position:absolute; left:50%; bottom:calc(100% + 10px); transform:translateX(-50%);
+      width:min(92vw,420px); background:rgba(17,24,39,.96); color:#fff; padding:12px;
+      border-radius:12px; font-size:12px; line-height:1.35; box-shadow:0 10px 30px rgba(0,0,0,.25);
+      opacity:0; pointer-events:none; transition:opacity .15s ease, transform .15s ease; z-index:20; text-align:left;
+      max-height:320px; overflow:auto;
+    }
+    .tooltip strong { display:block; margin-bottom:6px; }
+
+    @media (hover: hover) {
+      .card:hover .tooltip { opacity:1; transform:translateX(-50%) translateY(-2px); }
+    }
+
+    .card.show-tip .tooltip { opacity:1; pointer-events:auto; transform:translateX(-50%) translateY(-2px); }
+
     .divider { border-top:2px dashed #c4b5fd; margin:20px 0 10px; }
 
     @media (max-width:1100px) { .grid { grid-template-columns:repeat(3,minmax(0,1fr)); } }
@@ -82,14 +97,14 @@
     </div>
 
     <div class="section">
-      <div class="title"><span>Passed on Investment</span><span class="count" id="passed-count">0 companies</span></div>
+      <div class="title"><span>Call Executed: Pass</span><span class="count" id="passed-count">0 companies</span></div>
       <div class="grid" id="passed-grid"></div>
     </div>
 
     <div class="divider"></div>
 
     <div class="section">
-      <div class="title"><span>Advanced to Diligence</span><span class="count" id="not-passed-count">0 companies</span></div>
+      <div class="title"><span>Call Executed: Advance to Diligence</span><span class="count" id="not-passed-count">0 companies</span></div>
       <div class="grid" id="not-passed-grid"></div>
     </div>
   </div>
@@ -106,6 +121,15 @@
       const el = $("status");
       el.className = "status" + (type ? " " + type : "");
       el.textContent = text;
+    }
+
+    function escapeHtml(str) {
+      return String(str ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
     }
 
     function pct(n, d) { return d ? ((n / d) * 100).toFixed(1) + "%" : "0.0%"; }
@@ -140,6 +164,17 @@
       try { window.open(new URL(url, location.href).href, "_blank", "noopener,noreferrer"); } catch {}
     }
 
+    function isTouchUi() {
+      return window.matchMedia("(hover: none), (pointer: coarse)").matches;
+    }
+
+    function closeAllTooltips(exceptCard) {
+      document.querySelectorAll(".card.show-tip").forEach((el) => {
+        if (exceptCard && el === exceptCard) return;
+        el.classList.remove("show-tip");
+      });
+    }
+
     function toPassed(row) {
       const raw = row["Passed"];
       if (typeof raw === "boolean") return raw;
@@ -167,32 +202,11 @@
       try { return new URL(u).hostname.replace(/^www\./i, ""); } catch (e) { return ""; }
     }
 
-    function isDirectImageUrl(rawUrl) {
-      const u = normalizeHttpUrl(rawUrl);
-      if (!u) return false;
-      try {
-        const parsed = new URL(u);
-        const host = parsed.hostname.toLowerCase();
-        const path = parsed.pathname.toLowerCase();
-        if (
-          host.includes("linkedin.com") ||
-          host.includes("pitchbook.com") ||
-          host.includes("crunchbase.com")
-        ) {
-          return false;
-        }
-        if (path.includes("/profile") || path.includes("/people") || path.includes("/person") || path.includes("/company")) return false;
-        return true;
-      } catch (e) {
-        return false;
-      }
-    }
-
     function logoCandidates(company) {
       const out = [];
-      [company["Logo link"], company["logo"]].forEach((raw) => {
+      [company["Logo link merged"], company["Logo link"], company["logo"]].forEach((raw) => {
         const explicit = normalizeHttpUrl(raw || "");
-        if (isDirectImageUrl(explicit)) out.push(explicit);
+        if (explicit) out.push(explicit);
       });
 
       const domain = deriveDomain(company["Url"] || "");
@@ -210,10 +224,23 @@
       const category = String(company["Category"] || "").trim();
       const display = category ? `${name} (${category})` : name;
       const url = String(company["Url"] || "").trim();
+      const notes = String(company["Call Notes"] || "").trim();
+      const decision = String(company["Decision And Reason"] || "").trim();
 
       const card = document.createElement("div");
       card.className = "card";
-      card.addEventListener("click", () => safeOpen(url));
+
+      card.addEventListener("click", (e) => {
+        if (isTouchUi()) {
+          e.preventDefault();
+          e.stopPropagation();
+          const willShow = !card.classList.contains("show-tip");
+          closeAllTooltips();
+          if (willShow) card.classList.add("show-tip");
+          return;
+        }
+        safeOpen(url);
+      });
 
       const wrap = document.createElement("div");
       wrap.className = "logoWrap";
@@ -221,6 +248,8 @@
       img.className = "logo";
       img.alt = display;
       img.loading = "lazy";
+      img.referrerPolicy = "no-referrer";
+
       const ph = document.createElement("div");
       ph.className = "placeholder";
       ph.textContent = display;
@@ -235,7 +264,9 @@
 
       img.onload = () => { img.style.display = "block"; ph.style.display = "none"; };
       img.onerror = () => { if (!nextLogo()) { img.style.display = "none"; ph.style.display = "block"; } };
-      if (!nextLogo()) ph.style.display = "block";
+      const hasInitialLogo = nextLogo();
+      img.style.display = hasInitialLogo ? "block" : "none";
+      ph.style.display = hasInitialLogo ? "none" : "block";
 
       const nameEl = document.createElement("div");
       nameEl.className = "name";
@@ -243,13 +274,25 @@
 
       const tag = document.createElement("div");
       tag.className = "tag";
-      tag.textContent = passed ? "Advanced" : "Passed On";
+      tag.textContent = passed ? "Pass" : "Advance";
+
+      const tooltip = document.createElement("div");
+      tooltip.className = "tooltip";
+      const noteText = notes || "No call notes available.";
+      const decisionText = decision || "No decision notes available.";
+      tooltip.innerHTML =
+        "<strong>Call Notes</strong>" +
+        escapeHtml(noteText).replaceAll("\n", "<br>") +
+        "<br><br><strong>Decision And Reason</strong>" +
+        "<br>" +
+        escapeHtml(decisionText).replaceAll("\n", "<br>");
 
       wrap.appendChild(img);
       wrap.appendChild(ph);
       card.appendChild(wrap);
       card.appendChild(nameEl);
       card.appendChild(tag);
+      card.appendChild(tooltip);
       return card;
     }
 
@@ -301,14 +344,15 @@
       passed.forEach(c => passedGrid.appendChild(makeCard(c, true)));
       notPassed.forEach(c => npGrid.appendChild(makeCard(c, false)));
 
-      if (!passed.length) passedGrid.innerHTML = '<div class="status">No advanced companies in call executed.</div>';
-      if (!notPassed.length) npGrid.innerHTML = '<div class="status">No passed-on companies in call executed.</div>';
+      if (!passed.length) passedGrid.innerHTML = '<div class="status">No passed companies in call executed.</div>';
+      if (!notPassed.length) npGrid.innerHTML = '<div class="status">No advanced companies in call executed.</div>';
 
       setStatus("ok", "Loaded successfully.");
     }
+
+    document.addEventListener("click", () => closeAllTooltips());
 
     loadAndRender();
   </script>
 </body>
 </html>
-
