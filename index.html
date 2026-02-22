@@ -241,19 +241,31 @@
       ph.textContent = name;
 
       const cands = logoCandidates(company);
-      let i = 0;
+let i = 0;
 
-      function setLogoVisible() { img.style.display = "block"; ph.style.display = "none"; }
-      function setPlaceholderVisible() { img.style.display = "none"; ph.style.display = "block"; }
-      function tryNextLogo() {
-        if (i >= cands.length) { setPlaceholderVisible(); return; }
-        img.src = cands[i++];
-      }
+function setLogoVisible() {
+  img.style.display = "block";
+  ph.style.display = "none";
+}
 
-      img.onload = () => setLogoVisible();
-      img.onerror = () => tryNextLogo();
-      setPlaceholderVisible();
-      tryNextLogo();
+function setPlaceholderVisible() {
+  img.style.display = "none";
+  ph.style.display = "block";
+}
+
+function tryNextLogo() {
+  if (i >= cands.length) {
+    setPlaceholderVisible();
+    return;
+  }
+  img.src = cands[i++];
+}
+
+img.onload = () => setLogoVisible();
+img.onerror = () => tryNextLogo();
+
+setPlaceholderVisible();
+tryNextLogo();
 
       const nameEl = document.createElement("div");
       nameEl.className = "name";
