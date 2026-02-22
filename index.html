@@ -41,15 +41,23 @@
     .status.error { border-color: #fecaca; background: #fff1f2; color: #991b1b; }
     .status.ok { border-color: #bbf7d0; background: #ecfdf5; color: #065f46; }
 
-    .controls {
-      display: grid; grid-template-columns: 1.3fr 1fr; gap: 12px; margin: 10px auto 18px;
-      align-items: start;
-    }
-    .search input {
-      width: 100%; padding: 11px 13px; border-radius: 12px; border: 1px solid var(--line);
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 10px auto 18px;
+  align-items: center;
+  max-width: 1240px;
+}
+.search {
+  width: 100%;
+}
+.search input {
+  width: 100%;
+ padding: 11px 13px; border-radius: 12px; border: 1px solid var(--line);
       font-size: 14px; outline: none; background: #fff;
     }
-    .pillbar { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+    .pillbar { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; width: 100%; }
     .pill {
       display: inline-block; padding: 8px 12px; border-radius: 999px;
       border: 1px solid #ddd6fe; background: var(--brand-soft); color: #5d2cc5;
@@ -76,18 +84,22 @@
     .name { font-size: 12.5px; font-weight: 700; color: #374151; line-height: 1.25; }
 
     .tooltip {
-      position: absolute; left: 50%; bottom: calc(100% + 10px); transform: translateX(-50%);
-      width: min(90vw, 340px); background: rgba(17,24,39,.96); color: #fff; padding: 12px;
+      position: absolute; left: 50%; bottom: calc(100% + 10px); transform: translateX(var(--tip-x, -50%));
+      width: min(92vw, 420px); background: rgba(17,24,39,.96); color: #fff; padding: 12px;
       border-radius: 12px; font-size: 12px; line-height: 1.35; box-shadow: 0 10px 30px rgba(0,0,0,.25);
       opacity: 0; pointer-events: none; transition: opacity .15s ease, transform .15s ease; z-index: 20; text-align: left;
+      max-height: 320px; overflow: auto;
     }
-    .card:hover .tooltip { opacity: 1; transform: translateX(-50%) translateY(-2px); }
+    .card.show-tip .tooltip { opacity: 1; pointer-events: auto; transform: translateX(var(--tip-x, -50%)) translateY(-2px); }
+    @media (hover: hover) {
+      .card:hover .tooltip { opacity: 1; transform: translateX(var(--tip-x, -50%)) translateY(-2px); }
+    }
+
 
     @media (max-width:1100px) { .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-    @media (max-width:900px) { .controls { grid-template-columns: 1fr; } .pillbar { justify-content: flex-start; } }
     @media (max-width:760px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
     @media (max-width:520px) { .grid { grid-template-columns: 1fr; } }
-    @media (hover: none) { .tooltip { display: none; } }
+    
   </style>
 </head>
 <body>
@@ -174,10 +186,39 @@
         .replace(/^-+|-+$/g, "");
     }
 
-    function safeOpen(url) {
-      if (!url) return;
-      try { window.open(new URL(url, location.href).href, "_blank", "noopener,noreferrer"); } catch (e) {}
-    }
+function safeOpen(url) {
+  if (!url) return;
+  try { window.open(new URL(url, location.href).href, "_blank", "noopener,noreferrer"); } catch (e) {}
+}
+
+function isTouchUi() {
+  return window.matchMedia("(hover: none), (pointer: coarse)").matches;
+}
+
+function closeAllTooltips(exceptCard) {
+  document.querySelectorAll(".card.show-tip").forEach((el) => {
+    if (exceptCard && el === exceptCard) return;
+    el.classList.remove("show-tip");
+  });
+}
+
+function positionTooltip(card, tooltip) {
+  const pad = 14;
+  const vw = window.innerWidth || document.documentElement.clientWidth;
+  const cardRect = card.getBoundingClientRect();
+
+  // Use a stable width so clamp math matches rendering.
+  const tipWidth = Math.min(420, Math.max(260, vw - (pad * 2)));
+  tooltip.style.width = tipWidth + "px";
+
+  const center = cardRect.left + (cardRect.width / 2);
+  const minCenter = pad + (tipWidth / 2);
+  const maxCenter = vw - pad - (tipWidth / 2);
+  const clamped = Math.max(minCenter, Math.min(maxCenter, center));
+  const dx = Math.round(clamped - center);
+
+  tooltip.style.setProperty("--tip-x", `calc(-50% + ${dx}px)`);
+}
 
     function deriveDomain(rawUrl) {
       const s = String(rawUrl || "").trim();
@@ -263,7 +304,20 @@ function makeCard(company) {
       const card = document.createElement("div");
       card.className = "card";
       card.tabIndex = 0;
-      card.addEventListener("click", () => safeOpen(url));
+card.addEventListener("click", (e) => {
+  if (!isTouchUi()) {
+    safeOpen(url);
+    return;
+  }
+  if (card.classList.contains("show-tip")) {
+    safeOpen(url);
+    return;
+  }
+  e.preventDefault();
+  e.stopPropagation();
+  closeAllTooltips(card);
+  card.classList.add("show-tip");
+});
       card.addEventListener("keydown", (e) => {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
@@ -309,8 +363,12 @@ placeholder.style.display = hasInitialLogo ? "none" : "block";
 
       const tooltip = document.createElement("div");
       tooltip.className = "tooltip";
-      tooltip.innerHTML = "<strong>" + escapeHtml(name) + "</strong><br><br>" +
-        escapeHtml(about || "No description available.").replaceAll("\n", "<br>");
+tooltip.innerHTML = "<strong>" + escapeHtml(name) + "</strong><br><br>" +
+  escapeHtml(about || "No description available.").replaceAll("\n", "<br>");
+tooltip.addEventListener("click", (e) => e.stopPropagation());
+      card.addEventListener("mouseenter", () => {
+        if (!isTouchUi()) positionTooltip(card, tooltip);
+      });
 
       logoShell.appendChild(img);
       logoShell.appendChild(placeholder);
@@ -394,6 +452,8 @@ placeholder.style.display = hasInitialLogo ? "none" : "block";
       render(payload);
       setStatus("ok", "Loaded successfully.");
     }
+
+    document.addEventListener("click", () => closeAllTooltips());
 
     loadAndRender();
   </script>
