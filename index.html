@@ -6,204 +6,60 @@
   <title>Shane Wilson for Ibex: Winter 2026 Market Map</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", sans-serif;
-      background: #fff;
-      color: #111827;
-      padding: 28px 14px 36px;
-    }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", sans-serif; background: #fff; color: #111827; padding: 28px 14px 36px; }
     .container { max-width: 1300px; margin: 0 auto; }
 
-    .header {
-      text-align: center;
-      margin-bottom: 18px;
-      padding-bottom: 14px;
-      border-bottom: 1px solid #e5e7eb;
-    }
-    .header h1 {
-      font-size: clamp(1.7rem, 4.2vw, 2.8rem);
-      color: #5b35ba;
-      margin-bottom: 6px;
-    }
+    .header { text-align: center; margin-bottom: 18px; padding-bottom: 14px; border-bottom: 1px solid #e5e7eb; }
+    .header h1 { font-size: clamp(1.7rem, 4.2vw, 2.8rem); color: #5b35ba; margin-bottom: 6px; }
     .subtitle { color: #6b7280; }
 
-    .nav {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin: 12px 0 16px;
-      flex-wrap: wrap;
-    }
-    .nav a {
-      text-decoration: none;
-      padding: 8px 13px;
-      border-radius: 999px;
-      border: 1px solid #ddd6fe;
-      background: #ede9fe;
-      color: #5d2cc5;
-      font-weight: 600;
-    }
-    .nav a.active {
-      background: #7c3aed;
-      color: #fff;
-      border-color: #7c3aed;
-    }
+    .nav { display: flex; justify-content: center; gap: 10px; margin: 12px 0 16px; flex-wrap: wrap; }
+    .nav a { text-decoration: none; padding: 8px 13px; border-radius: 999px; border: 1px solid #ddd6fe; background: #ede9fe; color: #5d2cc5; font-weight: 600; }
+    .nav a.active { background: #7c3aed; color: #fff; border-color: #7c3aed; }
 
-    .status {
-      margin: 0 auto 14px;
-      max-width: 960px;
-      border: 1px solid #e5e7eb;
-      background: #fff;
-      padding: 11px 13px;
-      border-radius: 10px;
-      font-size: 14px;
-    }
+    .status { margin: 0 auto 14px; max-width: 960px; border: 1px solid #e5e7eb; background: #fff; padding: 11px 13px; border-radius: 10px; font-size: 14px; }
     .status.error { border-color: #fecaca; background: #fff1f2; color: #991b1b; }
     .status.ok { border-color: #bbf7d0; background: #ecfdf5; color: #065f46; }
 
-    .controls {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
-      margin: 0 auto 16px;
-      max-width: 1200px;
-    }
-    .searchWrap {
-      width: 100%;
-      max-width: 760px;
-    }
-    #search {
-      width: 100%;
-      padding: 11px 13px;
-      border-radius: 12px;
-      border: 1px solid #d1d5db;
-      font-size: 14px;
-      outline: none;
-    }
+    .controls { display: flex; flex-direction: column; align-items: center; gap: 12px; margin: 0 auto 16px; max-width: 1200px; }
+    .searchWrap { width: 100%; max-width: 760px; }
+    #search { width: 100%; padding: 11px 13px; border-radius: 12px; border: 1px solid #d1d5db; font-size: 14px; outline: none; }
     #search:focus { border-color: #a78bfa; box-shadow: 0 0 0 3px rgba(167,139,250,.2); }
 
-    .pillbar {
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-    .pill {
-      border: 1px solid #ddd6fe;
-      background: #ede9fe;
-      color: #5d2cc5;
-      border-radius: 999px;
-      padding: 7px 12px;
-      font-weight: 700;
-      font-size: 12px;
-      cursor: pointer;
-      white-space: nowrap;
-    }
-    .pill.active {
-      background: #7c3aed;
-      color: #fff;
-      border-color: #7c3aed;
-    }
+    .pillbar { width: 100%; display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; }
+    .pill { border: 1px solid #ddd6fe; background: #ede9fe; color: #5d2cc5; border-radius: 999px; padding: 7px 12px; font-weight: 700; font-size: 12px; cursor: pointer; white-space: nowrap; }
+    .pill.active { background: #7c3aed; color: #fff; border-color: #7c3aed; }
 
     .section { margin: 16px 0 8px; }
-    .title {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      margin-bottom: 8px;
-      font-weight: 800;
-      gap: 12px;
-    }
-    .count {
-      font-size: 12px;
-      color: #6b7280;
-      text-transform: uppercase;
-      white-space: nowrap;
-    }
+    .title { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; font-weight: 800; gap: 12px; }
+    .count { font-size: 12px; color: #6b7280; text-transform: uppercase; white-space: nowrap; }
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 10px;
-    }
-    .card {
-      border: 1px solid #e9d5ff;
-      background: #fff;
-      border-radius: 12px;
-      padding: 12px 10px;
-      min-height: 122px;
-      text-align: center;
-      cursor: pointer;
-      position: relative;
-    }
-    .logoWrap {
-      width: 84px;
-      height: 58px;
-      margin: 0 auto 8px;
-      border: 1px solid #eef0f4;
-      border-radius: 9px;
-      padding: 7px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-    }
+    .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+    .card { border: 1px solid #e9d5ff; background: #fff; border-radius: 12px; padding: 12px 10px; min-height: 122px; text-align: center; cursor: pointer; position: relative; }
+    .logoWrap { width: 84px; height: 58px; margin: 0 auto 8px; border: 1px solid #eef0f4; border-radius: 9px; padding: 7px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
     .logo { width: 100%; height: 100%; object-fit: contain; display: none; }
     .placeholder { font-size: 11px; color: #7c3aed; font-weight: 700; line-height: 1.2; }
     .name { font-size: 12.5px; font-weight: 700; color: #374151; line-height: 1.25; }
 
     .tooltip {
-      position: fixed;
-      left: 12px;
-      top: 12px;
-      z-index: 9999;
-      width: 560px;
-      max-width: calc(100vw - 24px);
-      max-height: calc(100vh - 24px);
-      overflow-y: auto;
-      background: rgba(15, 23, 42, 0.96);
-      color: #fff;
-      border-radius: 12px;
-      padding: 12px 14px;
-      box-shadow: 0 14px 28px rgba(0, 0, 0, 0.35);
-      line-height: 1.35;
-      text-align: left;
-      font-size: 12px;
-      white-space: pre-wrap;
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-      transform: translateY(6px);
+      position: fixed; left: 12px; top: 12px; z-index: 9999; width: 560px; max-width: calc(100vw - 24px);
+      max-height: calc(100vh - 24px); overflow-y: auto; background: rgba(15, 23, 42, 0.96); color: #fff;
+      border-radius: 12px; padding: 12px 14px; box-shadow: 0 14px 28px rgba(0, 0, 0, 0.35);
+      line-height: 1.35; text-align: left; font-size: 12px; white-space: pre-wrap;
+      opacity: 0; visibility: hidden; pointer-events: none; transform: translateY(6px);
       transition: opacity 120ms ease, transform 120ms ease, visibility 120ms ease;
     }
     .tooltip h4 { font-size: 13px; margin-bottom: 6px; font-weight: 800; }
-    .tooltip-open .tooltip {
-      opacity: 1;
-      visibility: visible;
-      transform: translateY(0);
-      pointer-events: auto;
-    }
+    .tooltip-open .tooltip { opacity: 1; visibility: visible; transform: translateY(0); pointer-events: auto; }
 
-    .touch-note-backdrop {
-      position: fixed; inset: 0; background: rgba(15, 23, 42, 0.45);
-      z-index: 10050; display: none; padding: 16px; align-items: center; justify-content: center;
-    }
+    .touch-note-backdrop { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.45); z-index: 10050; display: none; padding: 16px; align-items: center; justify-content: center; }
     .touch-note-backdrop.open { display: flex; }
-    .touch-note-modal {
-      width: min(92vw, 680px); max-height: 82vh; overflow: auto;
-      background: rgba(15, 23, 42, 0.97); color: #fff; border-radius: 14px;
-      padding: 14px 16px; box-shadow: 0 18px 40px rgba(0,0,0,0.45);
-    }
+    .touch-note-modal { width: min(92vw, 680px); max-height: 82vh; overflow: auto; background: rgba(15, 23, 42, 0.97); color: #fff; border-radius: 14px; padding: 14px 16px; box-shadow: 0 18px 40px rgba(0,0,0,0.45); }
     .touch-note-title { font-size: 14px; font-weight: 800; margin-bottom: 8px; }
     .touch-note-body { white-space: pre-wrap; line-height: 1.35; font-size: 13px; }
     .touch-note-hint { margin-top: 10px; font-size: 11px; color: #cbd5e1; }
 
-    @media (hover: none), (pointer: coarse) {
-      .tooltip { display: none !important; }
-    }
-
+    @media (hover: none), (pointer: coarse) { .tooltip { display: none !important; } }
     @media (max-width: 1100px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
     @media (max-width: 640px) { .grid { grid-template-columns: 1fr; } }
   </style>
@@ -223,9 +79,7 @@
     <div id="status" class="status">Loading data...</div>
 
     <div class="controls">
-      <div class="searchWrap">
-        <input id="search" type="text" placeholder="Search companies (name, about, category)" />
-      </div>
+      <div class="searchWrap"><input id="search" type="text" placeholder="Search companies (name, about, category)" /></div>
       <div id="pillbar" class="pillbar"></div>
     </div>
 
@@ -241,42 +95,34 @@
   </div>
 
   <script>
-    var CONFIG = {
+    const CONFIG = {
       endpointBase: "https://script.google.com/macros/s/AKfycbyRF62OEmU2SFH3juvFeCmklF4nKLhFr-6VEGNFHES4ZCi5D0-1dOx7LK4fSs_fiDJN/exec",
       view: "marketmap"
     };
 
-    function $(id) { return document.getElementById(id); }
+    const $ = (id) => document.getElementById(id);
+    const TOUCH_UI = window.matchMedia("(hover: none), (pointer: coarse)").matches || ("ontouchstart" in window) || (navigator.maxTouchPoints > 0);
 
-    var TOUCH_UI =
-      window.matchMedia("(hover: none), (pointer: coarse)").matches ||
-      ("ontouchstart" in window) ||
-      (navigator.maxTouchPoints > 0);
-
-    var armedTouchCardId = null;
-    var allRows = [];
-    var activeCategory = "All";
+    let allRows = [];
+    let activeCategory = "All";
+    let armedTouchCardId = null;
 
     function setStatus(type, text) {
-      var el = $("status");
+      const el = $("status");
       el.className = "status" + (type ? " " + type : "");
       el.textContent = text;
     }
 
     function buildApiUrl(base, params) {
-      var u = new URL(base);
-      var keys = Object.keys(params);
-      for (var i = 0; i < keys.length; i++) u.searchParams.set(keys[i], params[keys[i]]);
+      const u = new URL(base);
+      Object.keys(params).forEach((k) => u.searchParams.set(k, params[k]));
       return u.toString();
     }
 
     function loadJsonp(url, callbackName) {
-      return new Promise(function(resolve, reject) {
-        var script = document.createElement("script");
-        var timeout = setTimeout(function() {
-          cleanup();
-          reject(new Error("JSONP timeout"));
-        }, 20000);
+      return new Promise((resolve, reject) => {
+        const script = document.createElement("script");
+        const timeout = setTimeout(() => { cleanup(); reject(new Error("JSONP timeout")); }, 20000);
 
         function cleanup() {
           clearTimeout(timeout);
@@ -284,16 +130,8 @@
           window[callbackName] = undefined;
         }
 
-        window[callbackName] = function(data) {
-          cleanup();
-          resolve(data);
-        };
-
-        script.onerror = function() {
-          cleanup();
-          reject(new Error("JSONP script failed to load"));
-        };
-
+        window[callbackName] = (data) => { cleanup(); resolve(data); };
+        script.onerror = () => { cleanup(); reject(new Error("JSONP script failed to load")); };
         script.src = url;
         script.async = true;
         document.head.appendChild(script);
@@ -306,63 +144,56 @@
     }
 
     function normalizeLogoUrl(u) {
-      var v = String(u || "").trim();
+      const v = String(u || "").trim();
       if (!v) return "";
-      if (v.indexOf("//") === 0) return "https:" + v;
-      if (v.indexOf("http://") === 0) return "https://" + v.slice(7);
+      if (v.startsWith("//")) return "https:" + v;
+      if (v.startsWith("http://")) return "https://" + v.slice(7);
       return v;
     }
 
     function logoCandidates(company) {
-      var out = [];
-      var a = normalizeLogoUrl(company["Logo link"]);
-      var b = normalizeLogoUrl(company["logo"]);
-      if (a) out.push(a);
-      if (b && b !== a) out.push(b);
+      const out = [];
+      const fields = ["logo", "Logo link", "Logo link raw", "Logo link merged", "Logo", "logoUrl", "Logo URL"];
+      for (let i = 0; i < fields.length; i++) {
+        const v = normalizeLogoUrl(company[fields[i]]);
+        if (v) out.push(v);
+      }
 
-      var raw = String(company["Url"] || "").trim();
-      var withScheme = /^[a-z]+:\/\//i.test(raw) ? raw : (raw ? "https://" + raw : "");
+      const raw = String(company["Url"] || "").trim();
+      const withScheme = /^[a-z]+:\/\//i.test(raw) ? raw : (raw ? "https://" + raw : "");
       try {
-        var domain = new URL(withScheme).hostname.replace(/^www\./, "");
+        const domain = new URL(withScheme).hostname.replace(/^www\./, "");
         if (domain) out.push("https://www.google.com/s2/favicons?sz=128&domain=" + encodeURIComponent(domain));
       } catch (e) {}
 
-      var uniq = [];
-      var seen = {};
-      for (var i = 0; i < out.length; i++) {
-        if (!seen[out[i]]) {
-          seen[out[i]] = true;
-          uniq.push(out[i]);
-        }
-      }
-      return uniq;
+      return [...new Set(out)];
     }
 
     function positionTooltip(card, tip) {
-      var pad = 12;
-      var gap = 10;
-      var cardRect = card.getBoundingClientRect();
+      const pad = 12;
+      const gap = 10;
+      const cardRect = card.getBoundingClientRect();
 
-      var maxWidth = Math.max(280, Math.min(560, window.innerWidth - (pad * 2)));
+      const maxWidth = Math.max(280, Math.min(560, window.innerWidth - (pad * 2)));
       tip.style.width = maxWidth + "px";
       tip.style.maxHeight = Math.max(220, window.innerHeight - (pad * 2)) + "px";
 
-      var tipRect = tip.getBoundingClientRect();
+      const tipRect = tip.getBoundingClientRect();
 
-      var top = cardRect.top - tipRect.height - gap;
+      let top = cardRect.top - tipRect.height - gap;
       if (top < pad) top = cardRect.bottom + gap;
       top = Math.max(pad, Math.min(top, window.innerHeight - tipRect.height - pad));
 
-      var left = cardRect.left + (cardRect.width - tipRect.width) / 2;
+      let left = cardRect.left + (cardRect.width - tipRect.width) / 2;
       left = Math.max(pad, Math.min(left, window.innerWidth - tipRect.width - pad));
 
       tip.style.top = top + "px";
       tip.style.left = left + "px";
     }
 
-    var touchBackdrop = $("touch-note-backdrop");
-    var touchTitle = $("touch-note-title");
-    var touchBody = $("touch-note-body");
+    const touchBackdrop = $("touch-note-backdrop");
+    const touchTitle = $("touch-note-title");
+    const touchBody = $("touch-note-body");
 
     function showTouchNote(companyName, aboutText) {
       touchTitle.textContent = companyName || "Company Description";
@@ -379,7 +210,7 @@
       document.body.style.overflow = "";
     }
 
-    touchBackdrop.addEventListener("click", function(e) {
+    touchBackdrop.addEventListener("click", (e) => {
       if (e.target === touchBackdrop) {
         hideTouchNote();
         armedTouchCardId = null;
@@ -387,100 +218,77 @@
     });
 
     function makeCard(company) {
-      var name = String(company["Company Name"] || "Unknown").trim();
-      var about = String(company["About"] || "").trim();
-      var category = String(company["Category"] || "Uncategorized").trim();
-      var url = String(company["Url"] || "").trim();
-      var cardId = String(company["_id"] || (name + "|" + category));
+      const name = String(company["Company Name"] || "Unknown").trim();
+      const about = String(company["About"] || "").trim();
+      const category = String(company["Category"] || "Uncategorized").trim();
+      const url = String(company["Url"] || "").trim();
+      const cardId = String(company["_id"] || (name + "|" + category));
 
-      var card = document.createElement("div");
+      const card = document.createElement("div");
       card.className = "card";
 
-      var wrap = document.createElement("div");
+      const wrap = document.createElement("div");
       wrap.className = "logoWrap";
 
-      var img = document.createElement("img");
+      const img = document.createElement("img");
       img.className = "logo";
       img.alt = name;
       img.loading = "lazy";
       img.decoding = "async";
 
-      var ph = document.createElement("div");
+      const ph = document.createElement("div");
       ph.className = "placeholder";
       ph.textContent = name;
 
-      var cands = logoCandidates(company);
-      var i = 0;
+      const cands = logoCandidates(company);
+      let i = 0;
 
-      function setLogoVisible() {
-        img.style.display = "block";
-        ph.style.display = "none";
-      }
-
-      function setPlaceholderVisible() {
-        img.style.display = "none";
-        ph.style.display = "block";
-      }
-
+      function setLogoVisible() { img.style.display = "block"; ph.style.display = "none"; }
+      function setPlaceholderVisible() { img.style.display = "none"; ph.style.display = "block"; }
       function tryNextLogo() {
-        if (i >= cands.length) {
-          setPlaceholderVisible();
-          return;
-        }
+        if (i >= cands.length) { setPlaceholderVisible(); return; }
         img.src = cands[i++];
       }
 
-      img.onload = function() { setLogoVisible(); };
-      img.onerror = function() { tryNextLogo(); };
+      img.onload = () => setLogoVisible();
+      img.onerror = () => tryNextLogo();
       setPlaceholderVisible();
       tryNextLogo();
 
-      var nameEl = document.createElement("div");
+      const nameEl = document.createElement("div");
       nameEl.className = "name";
       nameEl.textContent = name;
 
-      card.appendChild(wrap);
       wrap.appendChild(img);
       wrap.appendChild(ph);
+      card.appendChild(wrap);
       card.appendChild(nameEl);
 
       if (about) {
-        var tip = document.createElement("div");
+        const tip = document.createElement("div");
         tip.className = "tooltip";
         tip.innerHTML = "<h4>Description</h4>" + about;
         card.appendChild(tip);
 
         if (!TOUCH_UI) {
-          card.addEventListener("mouseenter", function() {
+          card.addEventListener("mouseenter", () => {
             card.classList.add("tooltip-open");
-            requestAnimationFrame(function() { positionTooltip(card, tip); });
+            requestAnimationFrame(() => positionTooltip(card, tip));
           });
-          card.addEventListener("mousemove", function() {
+          card.addEventListener("mousemove", () => {
             if (card.classList.contains("tooltip-open")) positionTooltip(card, tip);
           });
-          card.addEventListener("mouseleave", function() {
-            card.classList.remove("tooltip-open");
-          });
+          card.addEventListener("mouseleave", () => card.classList.remove("tooltip-open"));
         }
       }
 
-      card.addEventListener("click", function(e) {
-        if (!TOUCH_UI) {
-          safeOpen(url);
-          return;
-        }
+      card.addEventListener("click", (e) => {
+        if (!TOUCH_UI) { safeOpen(url); return; }
         e.preventDefault();
         e.stopPropagation();
 
-        if (!about) {
-          safeOpen(url);
-          return;
-        }
-
-        if (armedTouchCardId === cardId) {
-          safeOpen(url);
-          return;
-        }
+        if (!about) { safeOpen(url); return; }
+        if (armedTouchCardId === cardId) { safeOpen(url); return; }
 
         armedTouchCardId = cardId;
         showTouchNote(name, about);
@@ -490,97 +298,76 @@
     }
 
     function renderPills(categories) {
-      var bar = $("pillbar");
+      const bar = $("pillbar");
       bar.innerHTML = "";
 
-      var allBtn = document.createElement("button");
+      const allBtn = document.createElement("button");
       allBtn.className = "pill" + (activeCategory === "All" ? " active" : "");
       allBtn.textContent = "All";
-      allBtn.addEventListener("click", function() {
-        activeCategory = "All";
-        render();
-      });
+      allBtn.addEventListener("click", () => { activeCategory = "All"; render(); });
       bar.appendChild(allBtn);
 
-      for (var i = 0; i < categories.length; i++) {
-        (function(cat) {
-          var btn = document.createElement("button");
-          btn.className = "pill" + (activeCategory === cat ? " active" : "");
-          btn.textContent = cat;
-          btn.addEventListener("click", function() {
-            activeCategory = cat;
-            render();
-          });
-          bar.appendChild(btn);
-        })(categories[i]);
-      }
+      categories.forEach((cat) => {
+        const btn = document.createElement("button");
+        btn.className = "pill" + (activeCategory === cat ? " active" : "");
+        btn.textContent = cat;
+        btn.addEventListener("click", () => { activeCategory = cat; render(); });
+        bar.appendChild(btn);
+      });
     }
 
     function render() {
-      var q = String($("search").value || "").trim().toLowerCase();
-      var sections = $("sections");
+      const q = String($("search").value || "").trim().toLowerCase();
+      const sections = $("sections");
       sections.innerHTML = "";
 
-      var grouped = {};
-      for (var i = 0; i < allRows.length; i++) {
-        var row = allRows[i];
-        var cat = String(row["Category"] || "Uncategorized").trim();
+      const grouped = {};
+      allRows.forEach((row) => {
+        const cat = String(row["Category"] || "Uncategorized").trim();
         if (!grouped[cat]) grouped[cat] = [];
         grouped[cat].push(row);
-      }
+      });
 
-      var cats = Object.keys(grouped).sort();
+      const cats = Object.keys(grouped).sort();
       renderPills(cats);
 
-      for (var ci = 0; ci < cats.length; ci++) {
-        var category = cats[ci];
-        if (activeCategory !== "All" && activeCategory !== category) continue;
+      cats.forEach((category) => {
+        if (activeCategory !== "All" && activeCategory !== category) return;
 
-        var rows = grouped[category];
-        var filtered = [];
-        for (var r = 0; r < rows.length; r++) {
-          var item = rows[r];
-          var hay = (
-            String(item["Company Name"] || "") + " " +
-            String(item["About"] || "") + " " +
-            String(item["Category"] || "")
-          ).toLowerCase();
+        const rows = grouped[category];
+        const filtered = rows.filter((item) => {
+          const hay = (String(item["Company Name"] || "") + " " + String(item["About"] || "") + " " + String(item["Category"] || "")).toLowerCase();
+          return !q || hay.includes(q);
+        });
 
-          if (!q || hay.indexOf(q) !== -1) filtered.push(item);
-        }
+        if (!filtered.length) return;
 
-        if (!filtered.length) continue;
-
-        var sec = document.createElement("div");
+        const sec = document.createElement("div");
         sec.className = "section";
 
-        var title = document.createElement("div");
+        const title = document.createElement("div");
         title.className = "title";
         title.innerHTML = "<span>" + category + "</span><span class='count'>" + filtered.length + " companies</span>";
 
-        var grid = document.createElement("div");
+        const grid = document.createElement("div");
         grid.className = "grid";
 
-        for (var k = 0; k < filtered.length; k++) grid.appendChild(makeCard(filtered[k]));
+        filtered.forEach((row) => grid.appendChild(makeCard(row)));
 
         sec.appendChild(title);
         sec.appendChild(grid);
         sections.appendChild(sec);
-      }
+      });
     }
 
     async function loadAndRender() {
       setStatus("", "Loading data...");
+      const cb = "cb_" + Math.random().toString(16).slice(2);
+      const url = buildApiUrl(CONFIG.endpointBase, { view: CONFIG.view, callback: cb, t: String(Date.now()) });
 
-      var url = buildApiUrl(CONFIG.endpointBase, {
-        view: CONFIG.view,
-        callback: "testCb",
-        t: String(Date.now())
-      });
-
-      var payload;
+      let payload;
       try {
-        payload = await loadJsonp(url, "testCb");
+        payload = await loadJsonp(url, cb);
       } catch (e) {
         setStatus("error", "Failed to load data: " + e.message);
         return;
@@ -591,9 +378,7 @@
         return;
       }
 
-      var rows = Array.isArray(payload.companies) ? payload.companies : [];
-      allRows = rows;
-
+      allRows = Array.isArray(payload.companies) ? payload.companies : [];
       render();
       setStatus("ok", "Loaded successfully.");
     }
