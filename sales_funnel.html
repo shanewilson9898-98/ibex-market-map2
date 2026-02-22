@@ -47,19 +47,19 @@
     .tag { margin-top:6px; font-size:10px; text-transform:uppercase; font-weight:700; color:#5d2cc5; border:1px solid #ddd6fe; background:#f5f3ff; border-radius:999px; display:inline-block; padding:2px 7px; }
 
     .tooltip {
-      position:absolute; left:50%; bottom:calc(100% + 10px); transform:translateX(-50%);
-      width:min(92vw,420px); background:rgba(17,24,39,.96); color:#fff; padding:12px;
+      position:absolute; left:50%; bottom:calc(100% + 10px); transform:translateX(var(--tip-x, -50%));
+      width:min(95vw,560px); background:rgba(17,24,39,.96); color:#fff; padding:12px;
       border-radius:12px; font-size:12px; line-height:1.35; box-shadow:0 10px 30px rgba(0,0,0,.25);
       opacity:0; pointer-events:none; transition:opacity .15s ease, transform .15s ease; z-index:20; text-align:left;
-      max-height:320px; overflow:auto;
+      max-height:min(70vh,620px); overflow:auto;
     }
     .tooltip strong { display:block; margin-bottom:6px; }
 
     @media (hover: hover) {
-      .card:hover .tooltip { opacity:1; transform:translateX(-50%) translateY(-2px); }
+      .card:hover .tooltip { opacity:1; pointer-events:auto; transform:translateX(var(--tip-x, -50%)) translateY(-2px); }
     }
 
-    .card.show-tip .tooltip { opacity:1; pointer-events:auto; transform:translateX(-50%) translateY(-2px); }
+    .card.show-tip .tooltip { opacity:1; pointer-events:auto; transform:translateX(var(--tip-x, -50%)) translateY(-2px); }
 
     .divider { border-top:2px dashed #c4b5fd; margin:20px 0 10px; }
 
@@ -175,6 +175,23 @@
       });
     }
 
+function positionTooltip(card, tooltip) {
+  const pad = 14;
+  const vw = window.innerWidth || document.documentElement.clientWidth;
+  const cardRect = card.getBoundingClientRect();
+
+  const tipWidth = Math.min(560, Math.max(300, vw - (pad * 2)));
+  tooltip.style.width = tipWidth + "px";
+
+  const center = cardRect.left + (cardRect.width / 2);
+  const minCenter = pad + (tipWidth / 2);
+  const maxCenter = vw - pad - (tipWidth / 2);
+  const clamped = Math.max(minCenter, Math.min(maxCenter, center));
+  const dx = Math.round(clamped - center);
+
+  tooltip.style.setProperty("--tip-x", `calc(-50% + ${dx}px)`);
+}
+
     function toPassed(row) {
       const raw = row["Passed"];
       if (typeof raw === "boolean") return raw;
@@ -229,17 +246,19 @@
 
       const card = document.createElement("div");
       card.className = "card";
-
       card.addEventListener("click", (e) => {
-        if (isTouchUi()) {
-          e.preventDefault();
-          e.stopPropagation();
-          const willShow = !card.classList.contains("show-tip");
-          closeAllTooltips();
-          if (willShow) card.classList.add("show-tip");
+        if (!isTouchUi()) {
+          safeOpen(url);
           return;
         }
-        safeOpen(url);
+        if (card.classList.contains("show-tip")) {
+          safeOpen(url);
+          return;
+        }
+        e.preventDefault();
+        e.stopPropagation();
+        closeAllTooltips(card);
+        card.classList.add("show-tip");
       });
 
       const wrap = document.createElement("div");
@@ -249,7 +268,6 @@
       img.alt = display;
       img.loading = "lazy";
       img.referrerPolicy = "no-referrer";
-
       const ph = document.createElement("div");
       ph.className = "placeholder";
       ph.textContent = display;
@@ -283,9 +301,13 @@
       tooltip.innerHTML =
         "<strong>Call Notes</strong>" +
         escapeHtml(noteText).replaceAll("\n", "<br>") +
-        "<br><br><strong>Decision And Reason</strong>" +
-        "<br>" +
+        "<br><br><strong>Decision And Reason</strong><br>" +
         escapeHtml(decisionText).replaceAll("\n", "<br>");
+      tooltip.addEventListener("click", (e) => e.stopPropagation());
+
+      card.addEventListener("mouseenter", () => {
+        if (!isTouchUi()) positionTooltip(card, tooltip);
+      });
 
       wrap.appendChild(img);
       wrap.appendChild(ph);
