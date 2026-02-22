@@ -46,7 +46,7 @@
     .sc .n { font-size: clamp(1.3rem,4vw,2.4rem); font-weight: 800; }
 
     .section { margin-top: 16px; }
-    .title { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; font-weight: 800; }
+    .title { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; font-weight: 800; gap: 12px; }
     .count { font-size: 12px; color: #6b7280; text-transform: uppercase; white-space: nowrap; }
 
     .grid { display: grid; grid-template-columns: repeat(5,minmax(0,1fr)); gap: 10px; }
@@ -233,33 +233,33 @@
     }
 
     function normalizeLogoUrl(u) {
-  const v = String(u || "").trim();
-  if (!v) return "";
-  if (v.startsWith("//")) return "https:" + v;
-  if (v.startsWith("http://")) return "https://" + v.slice(7);
-  return v;
-}
-
-function logoCandidates(company) {
-  const out = [];
-  const explicitA = normalizeLogoUrl(company["Logo link"]);
-  const explicitB = normalizeLogoUrl(company["logo"]);
-  if (explicitA) out.push(explicitA);
-  if (explicitB && explicitB !== explicitA) out.push(explicitB);
-
-  const raw = String(company["Url"] || "").trim();
-  const withScheme = /^[a-z]+:\/\//i.test(raw) ? raw : (raw ? "https://" + raw : "");
-  try {
-    const domain = new URL(withScheme).hostname.replace(/^www\./, "");
-    if (domain) {
-      out.push("https://logo.clearbit.com/" + encodeURIComponent(domain));
-      out.push("https://www.google.com/s2/favicons?sz=128&domain=" + encodeURIComponent(domain));
-      out.push("https://icons.duckduckgo.com/ip3/" + encodeURIComponent(domain) + ".ico");
+      const v = String(u || "").trim();
+      if (!v) return "";
+      if (v.startsWith("//")) return "https:" + v;
+      if (v.startsWith("http://")) return "https://" + v.slice(7);
+      return v;
     }
-  } catch (e) {}
 
-  return [...new Set(out)];
-}
+    function logoCandidates(company) {
+      const out = [];
+      const explicitA = normalizeLogoUrl(company["Logo link"]);
+      const explicitB = normalizeLogoUrl(company["logo"]);
+      if (explicitA) out.push(explicitA);
+      if (explicitB && explicitB !== explicitA) out.push(explicitB);
+
+      const raw = String(company["Url"] || "").trim();
+      const withScheme = /^[a-z]+:\/\//i.test(raw) ? raw : (raw ? "https://" + raw : "");
+      try {
+        const domain = new URL(withScheme).hostname.replace(/^www\./, "");
+        if (domain) {
+          out.push("https://logo.clearbit.com/" + encodeURIComponent(domain));
+          out.push("https://www.google.com/s2/favicons?sz=128&domain=" + encodeURIComponent(domain));
+          out.push("https://icons.duckduckgo.com/ip3/" + encodeURIComponent(domain) + ".ico");
+        }
+      } catch (e) {}
+
+      return [...new Set(out)];
+    }
 
     function positionTooltip(card, tip) {
       const pad = 12;
@@ -341,51 +341,51 @@ function logoCandidates(company) {
       ph.className = "placeholder";
       ph.textContent = display;
 
-      onst cands = logoCandidates(company);
-let i = 0;
+      const cands = logoCandidates(company);
+      let i = 0;
 
-function setLogoVisible() {
-  img.style.display = "block";
-  ph.style.display = "none";
-}
+      function setLogoVisible() {
+        img.style.display = "block";
+        ph.style.display = "none";
+      }
 
-function setPlaceholderVisible() {
-  img.style.display = "none";
-  ph.style.display = "block";
-}
+      function setPlaceholderVisible() {
+        img.style.display = "none";
+        ph.style.display = "block";
+      }
 
-function tryNextLogo() {
-  if (i >= cands.length) {
-    setPlaceholderVisible();
-    return;
-  }
+      function tryNextLogo() {
+        if (i >= cands.length) {
+          setPlaceholderVisible();
+          return;
+        }
 
-  const src = cands[i++];
-  const probe = new Image();
+        const src = cands[i++];
+        const probe = new Image();
 
-  // Mobile-safe: if a host hangs, fail over quickly
-  const t = setTimeout(() => {
-    probe.onload = null;
-    probe.onerror = null;
-    tryNextLogo();
-  }, 3000);
+        const t = setTimeout(() => {
+          probe.onload = null;
+          probe.onerror = null;
+          tryNextLogo();
+        }, 3000);
 
-  probe.onload = () => {
-    clearTimeout(t);
-    img.src = src;
-    setLogoVisible();
-  };
+        probe.onload = () => {
+          clearTimeout(t);
+          img.src = src;
+          setLogoVisible();
+        };
 
-  probe.onerror = () => {
-    clearTimeout(t);
-    tryNextLogo();
-  };
+        probe.onerror = () => {
+          clearTimeout(t);
+          tryNextLogo();
+        };
 
-  probe.src = src;
-}
+        probe.src = src;
+      }
 
-setPlaceholderVisible();
-tryNextLogo();
+      setPlaceholderVisible();
+      tryNextLogo();
+
       const nameEl = document.createElement("div");
       nameEl.className = "name";
       nameEl.textContent = display;
@@ -497,4 +497,3 @@ tryNextLogo();
   </script>
 </body>
 </html>
-
