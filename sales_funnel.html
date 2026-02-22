@@ -6,12 +6,7 @@
   <title>Shane Wilson for Ibex: Winter 2026 Deal Flow</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", sans-serif;
-      background: #fff;
-      padding: 28px 14px 36px;
-      color: #111827;
-    }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", sans-serif; background: #fff; padding: 28px 14px 36px; color: #111827; }
     .container { max-width: 1300px; margin: 0 auto; }
 
     .header { text-align: center; margin-bottom: 18px; padding-bottom: 14px; border-bottom: 1px solid #e5e7eb; }
@@ -19,16 +14,10 @@
     .subtitle { color: #6b7280; }
 
     .nav { display: flex; justify-content: center; gap: 10px; margin: 12px 0 16px; flex-wrap: wrap; }
-    .nav a {
-      text-decoration: none; padding: 8px 13px; border-radius: 999px;
-      border: 1px solid #ddd6fe; background: #ede9fe; color: #5d2cc5; font-weight: 600;
-    }
+    .nav a { text-decoration: none; padding: 8px 13px; border-radius: 999px; border: 1px solid #ddd6fe; background: #ede9fe; color: #5d2cc5; font-weight: 600; }
     .nav a.active { background: #7c3aed; color: #fff; border-color: #7c3aed; }
 
-    .status {
-      margin: 0 auto 14px; max-width: 920px; border: 1px solid #e5e7eb;
-      background: #fff; padding: 11px 13px; border-radius: 10px; font-size: 14px;
-    }
+    .status { margin: 0 auto 14px; max-width: 920px; border: 1px solid #e5e7eb; background: #fff; padding: 11px 13px; border-radius: 10px; font-size: 14px; }
     .status.error { border-color: #fecaca; background: #fff1f2; color: #991b1b; }
     .status.ok { border-color: #bbf7d0; background: #ecfdf5; color: #065f46; }
 
@@ -50,74 +39,33 @@
     .count { font-size: 12px; color: #6b7280; text-transform: uppercase; white-space: nowrap; }
 
     .grid { display: grid; grid-template-columns: repeat(5,minmax(0,1fr)); gap: 10px; }
-    .card {
-      border: 1px solid #e9d5ff; background: #fff; border-radius: 12px; padding: 12px 10px;
-      min-height: 122px; text-align: center; cursor: pointer; position: relative;
-    }
-    .logoWrap {
-      width: 84px; height: 58px; margin: 0 auto 8px; border: 1px solid #eef0f4;
-      border-radius: 9px; padding: 7px; display: flex; align-items: center; justify-content: center;
-      overflow: hidden;
-    }
+    .card { border: 1px solid #e9d5ff; background: #fff; border-radius: 12px; padding: 12px 10px; min-height: 122px; text-align: center; cursor: pointer; position: relative; }
+    .logoWrap { width: 84px; height: 58px; margin: 0 auto 8px; border: 1px solid #eef0f4; border-radius: 9px; padding: 7px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
     .logo { width: 100%; height: 100%; object-fit: contain; display: none; }
     .placeholder { font-size: 11px; color: #7c3aed; font-weight: 700; line-height: 1.2; }
     .name { font-size: 12.5px; font-weight: 700; color: #374151; line-height: 1.25; }
-    .tag {
-      margin-top: 6px; font-size: 10px; text-transform: uppercase; font-weight: 700;
-      color: #5d2cc5; border: 1px solid #ddd6fe; background: #f5f3ff; border-radius: 999px; display: inline-block; padding: 2px 7px;
-    }
+    .tag { margin-top: 6px; font-size: 10px; text-transform: uppercase; font-weight: 700; color: #5d2cc5; border: 1px solid #ddd6fe; background: #f5f3ff; border-radius: 999px; display: inline-block; padding: 2px 7px; }
 
     .tooltip {
-      position: fixed;
-      left: 12px;
-      top: 12px;
-      z-index: 9999;
-      width: 560px;
-      max-width: calc(100vw - 24px);
-      max-height: calc(100vh - 24px);
-      overflow-y: auto;
-      background: rgba(15, 23, 42, 0.96);
-      color: #fff;
-      border-radius: 12px;
-      padding: 12px 14px;
-      box-shadow: 0 14px 28px rgba(0,0,0,0.35);
-      line-height: 1.35;
-      text-align: left;
-      font-size: 12px;
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-      transform: translateY(6px);
-      transition: opacity 120ms ease, transform 120ms ease, visibility 120ms ease;
+      position: fixed; left: 12px; top: 12px; z-index: 9999; width: 560px; max-width: calc(100vw - 24px);
+      max-height: calc(100vh - 24px); overflow-y: auto; background: rgba(15, 23, 42, 0.96); color: #fff;
+      border-radius: 12px; padding: 12px 14px; box-shadow: 0 14px 28px rgba(0,0,0,0.35); line-height: 1.35;
+      text-align: left; font-size: 12px; white-space: pre-wrap; opacity: 0; visibility: hidden; pointer-events: none;
+      transform: translateY(6px); transition: opacity 120ms ease, transform 120ms ease, visibility 120ms ease;
     }
     .tooltip h4 { font-size: 13px; margin-bottom: 6px; font-weight: 800; }
-    .tooltip-open .tooltip {
-      opacity: 1;
-      visibility: visible;
-      transform: translateY(0);
-      pointer-events: auto;
-    }
+    .tooltip-open .tooltip { opacity: 1; visibility: visible; transform: translateY(0); pointer-events: auto; }
 
     .divider { border-top: 2px dashed #c4b5fd; margin: 20px 0 10px; }
 
-    .touch-note-backdrop {
-      position: fixed; inset: 0; background: rgba(15, 23, 42, 0.45);
-      z-index: 10050; display: none; padding: 16px; align-items: center; justify-content: center;
-    }
+    .touch-note-backdrop { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.45); z-index: 10050; display: none; padding: 16px; align-items: center; justify-content: center; }
     .touch-note-backdrop.open { display: flex; }
-    .touch-note-modal {
-      width: min(92vw, 680px); max-height: 82vh; overflow: auto;
-      background: rgba(15, 23, 42, 0.97); color: #fff; border-radius: 14px;
-      padding: 14px 16px; box-shadow: 0 18px 40px rgba(0,0,0,0.45);
-    }
+    .touch-note-modal { width: min(92vw, 680px); max-height: 82vh; overflow: auto; background: rgba(15, 23, 42, 0.97); color: #fff; border-radius: 14px; padding: 14px 16px; box-shadow: 0 18px 40px rgba(0,0,0,0.45); }
     .touch-note-title { font-size: 14px; font-weight: 800; margin-bottom: 8px; }
-    .touch-note-body { white-space: normal; line-height: 1.35; font-size: 13px; }
+    .touch-note-body { white-space: pre-wrap; line-height: 1.35; font-size: 13px; }
     .touch-note-hint { margin-top: 10px; font-size: 11px; color: #cbd5e1; }
 
-    @media (hover: none), (pointer: coarse) {
-      .tooltip { display: none !important; }
-    }
-
+    @media (hover: none), (pointer: coarse) { .tooltip { display: none !important; } }
     @media (max-width:1100px) { .grid { grid-template-columns: repeat(3,minmax(0,1fr)); } }
     @media (max-width:760px) { .metrics { grid-template-columns: 1fr; } .grid { grid-template-columns: repeat(2,minmax(0,1fr)); } }
     @media (max-width:520px) { .grid { grid-template-columns: 1fr; } }
@@ -170,22 +118,17 @@
   </div>
 
   <script>
-    var CONFIG = {
+    const CONFIG = {
       endpointBase: "https://script.google.com/macros/s/AKfycbyRF62OEmU2SFH3juvFeCmklF4nKLhFr-6VEGNFHES4ZCi5D0-1dOx7LK4fSs_fiDJN/exec",
       view: "marketmap"
     };
 
-    function $(id) { return document.getElementById(id); }
-
-    var TOUCH_UI =
-      window.matchMedia("(hover: none), (pointer: coarse)").matches ||
-      ("ontouchstart" in window) ||
-      (navigator.maxTouchPoints > 0);
-
-    var armedTouchCardId = null;
+    const $ = (id) => document.getElementById(id);
+    const TOUCH_UI = window.matchMedia("(hover: none), (pointer: coarse)").matches || ("ontouchstart" in window) || (navigator.maxTouchPoints > 0);
+    let armedTouchCardId = null;
 
     function setStatus(type, text) {
-      var el = $("status");
+      const el = $("status");
       el.className = "status" + (type ? " " + type : "");
       el.textContent = text;
     }
@@ -193,19 +136,15 @@
     function pct(n, d) { return d ? ((n / d) * 100).toFixed(1) + "%" : "0.0%"; }
 
     function buildApiUrl(base, params) {
-      var u = new URL(base);
-      var keys = Object.keys(params);
-      for (var i = 0; i < keys.length; i++) u.searchParams.set(keys[i], params[keys[i]]);
+      const u = new URL(base);
+      Object.keys(params).forEach((k) => u.searchParams.set(k, params[k]));
       return u.toString();
     }
 
     function loadJsonp(url, callbackName) {
-      return new Promise(function(resolve, reject) {
-        var script = document.createElement("script");
-        var timeout = setTimeout(function() {
-          cleanup();
-          reject(new Error("JSONP timeout"));
-        }, 20000);
+      return new Promise((resolve, reject) => {
+        const script = document.createElement("script");
+        const timeout = setTimeout(() => { cleanup(); reject(new Error("JSONP timeout")); }, 20000);
 
         function cleanup() {
           clearTimeout(timeout);
@@ -213,16 +152,8 @@
           window[callbackName] = undefined;
         }
 
-        window[callbackName] = function(data) {
-          cleanup();
-          resolve(data);
-        };
-
-        script.onerror = function() {
-          cleanup();
-          reject(new Error("JSONP script failed to load"));
-        };
-
+        window[callbackName] = (data) => { cleanup(); resolve(data); };
+        script.onerror = () => { cleanup(); reject(new Error("JSONP script failed to load")); };
         script.src = url;
         script.async = true;
         document.head.appendChild(script);
@@ -235,88 +166,68 @@
     }
 
     function toPassed(row) {
-      var raw = row["Passed"];
+      const raw = row["Passed"];
       if (typeof raw === "boolean") return raw;
       if (typeof raw === "number") return raw > 0;
-      var v = String(raw || "").trim().toLowerCase();
-      return ["1", "true", "yes", "y", "passed", "pass"].indexOf(v) !== -1;
+      const v = String(raw || "").trim().toLowerCase();
+      return ["1", "true", "yes", "y", "passed", "pass"].includes(v);
     }
 
     function normalizeLogoUrl(u) {
-      var v = String(u || "").trim();
+      const v = String(u || "").trim();
       if (!v) return "";
-      if (v.indexOf("//") === 0) return "https:" + v;
-      if (v.indexOf("http://") === 0) return "https://" + v.slice(7);
+      if (v.startsWith("//")) return "https:" + v;
+      if (v.startsWith("http://")) return "https://" + v.slice(7);
       return v;
     }
 
     function logoCandidates(company) {
-      var out = [];
-      var a = normalizeLogoUrl(company["Logo link"]);
-      var b = normalizeLogoUrl(company["logo"]);
-      if (a) out.push(a);
-      if (b && b !== a) out.push(b);
+      const out = [];
+      const fields = ["logo", "Logo link", "Logo link raw", "Logo link merged", "Logo", "logoUrl", "Logo URL"];
+      for (let i = 0; i < fields.length; i++) {
+        const v = normalizeLogoUrl(company[fields[i]]);
+        if (v) out.push(v);
+      }
 
-      var raw = String(company["Url"] || "").trim();
-      var withScheme = /^[a-z]+:\/\//i.test(raw) ? raw : (raw ? "https://" + raw : "");
+      const raw = String(company["Url"] || "").trim();
+      const withScheme = /^[a-z]+:\/\//i.test(raw) ? raw : (raw ? "https://" + raw : "");
       try {
-        var domain = new URL(withScheme).hostname.replace(/^www\./, "");
+        const domain = new URL(withScheme).hostname.replace(/^www\./, "");
         if (domain) out.push("https://www.google.com/s2/favicons?sz=128&domain=" + encodeURIComponent(domain));
       } catch (e) {}
 
-      var uniq = [];
-      var seen = {};
-      for (var i = 0; i < out.length; i++) {
-        if (!seen[out[i]]) {
-          seen[out[i]] = true;
-          uniq.push(out[i]);
-        }
-      }
-      return uniq;
-    }
-
-    function escHtml(s) {
-      return String(s || "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;");
-    }
-
-    function formatNotesHtml(notesText) {
-      return escHtml(notesText || "")
-        .replace(/Decision And Reason/g, "<strong>Decision And Reason</strong>")
-        .replace(/\n/g, "<br>");
+      return [...new Set(out)];
     }
 
     function positionTooltip(card, tip) {
-      var pad = 12;
-      var gap = 10;
-      var cardRect = card.getBoundingClientRect();
+      const pad = 12;
+      const gap = 10;
+      const cardRect = card.getBoundingClientRect();
 
-      var maxWidth = Math.max(280, Math.min(560, window.innerWidth - (pad * 2)));
+      const maxWidth = Math.max(280, Math.min(560, window.innerWidth - (pad * 2)));
       tip.style.width = maxWidth + "px";
       tip.style.maxHeight = Math.max(220, window.innerHeight - (pad * 2)) + "px";
 
-      var tipRect = tip.getBoundingClientRect();
+      const tipRect = tip.getBoundingClientRect();
 
-      var top = cardRect.top - tipRect.height - gap;
+      let top = cardRect.top - tipRect.height - gap;
       if (top < pad) top = cardRect.bottom + gap;
       top = Math.max(pad, Math.min(top, window.innerHeight - tipRect.height - pad));
 
-      var left = cardRect.left + (cardRect.width - tipRect.width) / 2;
+      let left = cardRect.left + (cardRect.width - tipRect.width) / 2;
       left = Math.max(pad, Math.min(left, window.innerWidth - tipRect.width - pad));
 
       tip.style.top = top + "px";
       tip.style.left = left + "px";
     }
 
-    var touchBackdrop = $("touch-note-backdrop");
-    var touchTitle = $("touch-note-title");
-    var touchBody = $("touch-note-body");
+    const touchBackdrop = $("touch-note-backdrop");
+    const touchTitle = $("touch-note-title");
+    const touchBody = $("touch-note-body");
 
     function showTouchNote(companyName, notesText) {
       touchTitle.textContent = companyName || "Call Notes";
-      touchBody.innerHTML = formatNotesHtml(notesText || "");
+      touchBody.textContent = notesText || "";
       touchBackdrop.classList.add("open");
       touchBackdrop.setAttribute("aria-hidden", "false");
       touchBackdrop.scrollTop = 0;
@@ -329,7 +240,7 @@
       document.body.style.overflow = "";
     }
 
-    touchBackdrop.addEventListener("click", function(e) {
+    touchBackdrop.addEventListener("click", (e) => {
       if (e.target === touchBackdrop) {
         hideTouchNote();
         armedTouchCardId = null;
@@ -337,68 +248,57 @@
     });
 
     function getNotesText(company) {
-      var callNotes = String(company["Call Notes"] || "").trim();
-      var decision = String(company["Decision And Reason"] || "").trim();
+      const callNotes = String(company["Call Notes"] || "").trim();
+      const decision = String(company["Decision And Reason"] || "").trim();
       if (!callNotes && !decision) return "";
       if (callNotes && decision) return "Call Notes\n\n" + callNotes + "\n\nDecision And Reason\n\n" + decision;
       return callNotes ? ("Call Notes\n\n" + callNotes) : ("Decision And Reason\n\n" + decision);
     }
 
     function makeCard(company, passed) {
-      var name = String(company["Company Name"] || "Unknown").trim();
-      var category = String(company["Category"] || "").trim();
-      var display = category ? (name + " (" + category + ")") : name;
-      var url = String(company["Url"] || "").trim();
-      var notesText = getNotesText(company);
-      var cardId = String(company["_id"] || display);
+      const name = String(company["Company Name"] || "Unknown").trim();
+      const category = String(company["Category"] || "").trim();
+      const display = category ? (name + " (" + category + ")") : name;
+      const url = String(company["Url"] || "").trim();
+      const notesText = getNotesText(company);
+      const cardId = String(company["_id"] || display);
 
-      var card = document.createElement("div");
+      const card = document.createElement("div");
       card.className = "card";
 
-      var wrap = document.createElement("div");
+      const wrap = document.createElement("div");
       wrap.className = "logoWrap";
 
-      var img = document.createElement("img");
+      const img = document.createElement("img");
       img.className = "logo";
       img.alt = display;
       img.loading = "lazy";
       img.decoding = "async";
 
-      var ph = document.createElement("div");
+      const ph = document.createElement("div");
       ph.className = "placeholder";
       ph.textContent = display;
 
-      var cands = logoCandidates(company);
-      var i = 0;
+      const cands = logoCandidates(company);
+      let i = 0;
 
-      function setLogoVisible() {
-        img.style.display = "block";
-        ph.style.display = "none";
-      }
-
-      function setPlaceholderVisible() {
-        img.style.display = "none";
-        ph.style.display = "block";
-      }
-
+      function setLogoVisible() { img.style.display = "block"; ph.style.display = "none"; }
+      function setPlaceholderVisible() { img.style.display = "none"; ph.style.display = "block"; }
       function tryNextLogo() {
-        if (i >= cands.length) {
-          setPlaceholderVisible();
-          return;
-        }
+        if (i >= cands.length) { setPlaceholderVisible(); return; }
         img.src = cands[i++];
       }
 
-      img.onload = function() { setLogoVisible(); };
-      img.onerror = function() { tryNextLogo(); };
+      img.onload = () => setLogoVisible();
+      img.onerror = () => tryNextLogo();
       setPlaceholderVisible();
       tryNextLogo();
 
-      var nameEl = document.createElement("div");
+      const nameEl = document.createElement("div");
       nameEl.className = "name";
       nameEl.textContent = display;
 
-      var tag = document.createElement("div");
+      const tag = document.createElement("div");
       tag.className = "tag";
       tag.textContent = passed ? "Pass" : "Advance";
 
@@ -409,42 +309,30 @@
       card.appendChild(tag);
 
       if (notesText) {
-        var tip = document.createElement("div");
+        const tip = document.createElement("div");
         tip.className = "tooltip";
-        tip.innerHTML = "<h4>Call Notes</h4>" + formatNotesHtml(notesText);
+        tip.innerHTML = "<h4>Call Notes</h4>" + notesText;
         card.appendChild(tip);
 
         if (!TOUCH_UI) {
-          card.addEventListener("mouseenter", function() {
+          card.addEventListener("mouseenter", () => {
             card.classList.add("tooltip-open");
-            requestAnimationFrame(function() { positionTooltip(card, tip); });
+            requestAnimationFrame(() => positionTooltip(card, tip));
           });
-          card.addEventListener("mousemove", function() {
+          card.addEventListener("mousemove", () => {
             if (card.classList.contains("tooltip-open")) positionTooltip(card, tip);
           });
-          card.addEventListener("mouseleave", function() {
-            card.classList.remove("tooltip-open");
-          });
+          card.addEventListener("mouseleave", () => card.classList.remove("tooltip-open"));
         }
       }
 
-      card.addEventListener("click", function(e) {
-        if (!TOUCH_UI) {
-          safeOpen(url);
-          return;
-        }
+      card.addEventListener("click", (e) => {
+        if (!TOUCH_UI) { safeOpen(url); return; }
         e.preventDefault();
         e.stopPropagation();
 
-        if (!notesText) {
-          safeOpen(url);
-          return;
-        }
-
-        if (armedTouchCardId === cardId) {
-          safeOpen(url);
-          return;
-        }
+        if (!notesText) { safeOpen(url); return; }
+        if (armedTouchCardId === cardId) { safeOpen(url); return; }
 
         armedTouchCardId = cardId;
         showTouchNote(display, notesText);
@@ -455,16 +343,12 @@
 
     async function loadAndRender() {
       setStatus("", "Loading data...");
+      const cb = "cb_" + Math.random().toString(16).slice(2);
+      const url = buildApiUrl(CONFIG.endpointBase, { view: CONFIG.view, callback: cb, t: String(Date.now()) });
 
-      var url = buildApiUrl(CONFIG.endpointBase, {
-        view: CONFIG.view,
-        callback: "testCb",
-        t: String(Date.now())
-      });
-
-      var payload;
+      let payload;
       try {
-        payload = await loadJsonp(url, "testCb");
+        payload = await loadJsonp(url, cb);
       } catch (e) {
         setStatus("error", "Failed to load data: " + e.message);
         return;
@@ -475,10 +359,9 @@
         return;
       }
 
-      var funnel = (payload && payload.funnel) ? payload.funnel : {};
-      var contacted = Number(funnel.contacted || 0);
-      var connected = Number(funnel.connected || 0);
-      var callExecuted = Number(funnel.callExecuted || 0);
+      const contacted = Number(payload?.funnel?.contacted || 0);
+      const connected = Number(payload?.funnel?.connected || 0);
+      const callExecuted = Number(payload?.funnel?.callExecuted || 0);
 
       $("count-contacted").textContent = String(contacted);
       $("count-connected").textContent = String(connected);
@@ -486,20 +369,20 @@
       $("metric-connection-rate").textContent = pct(connected, contacted);
       $("metric-call-executed-rate").textContent = pct(callExecuted, contacted);
 
-      var rows = Array.isArray(payload.callExecutedCompanies) ? payload.callExecutedCompanies : [];
-      var passed = rows.filter(toPassed);
-      var advanced = rows.filter(function(r) { return !toPassed(r); });
+      const rows = Array.isArray(payload.callExecutedCompanies) ? payload.callExecutedCompanies : [];
+      const passed = rows.filter(toPassed);
+      const advanced = rows.filter((r) => !toPassed(r));
 
       $("passed-count").textContent = passed.length + " companies";
       $("advanced-count").textContent = advanced.length + " companies";
 
-      var passedGrid = $("passed-grid");
-      var advancedGrid = $("advanced-grid");
+      const passedGrid = $("passed-grid");
+      const advancedGrid = $("advanced-grid");
       passedGrid.innerHTML = "";
       advancedGrid.innerHTML = "";
 
-      for (var i = 0; i < passed.length; i++) passedGrid.appendChild(makeCard(passed[i], true));
-      for (var j = 0; j < advanced.length; j++) advancedGrid.appendChild(makeCard(advanced[j], false));
+      passed.forEach((c) => passedGrid.appendChild(makeCard(c, true)));
+      advanced.forEach((c) => advancedGrid.appendChild(makeCard(c, false)));
 
       if (!passed.length) passedGrid.innerHTML = '<div class="status">No pass companies in call executed.</div>';
       if (!advanced.length) advancedGrid.innerHTML = '<div class="status">No advanced companies in call executed.</div>';
