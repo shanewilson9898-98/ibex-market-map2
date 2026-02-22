@@ -11,9 +11,11 @@
     * { box-sizing:border-box; margin:0; padding:0; }
     body { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif; background:var(--bg); color:var(--ink); padding:20px 12px 28px; }
     .container { max-width:1300px; margin:0 auto; }
+
     .header { text-align:center; margin-bottom:18px; padding-bottom:14px; border-bottom:1px solid var(--line); }
     h1 { font-size:clamp(1.6rem,4vw,2.6rem); color:#5b35ba; margin-bottom:8px; }
     .subtitle { color:var(--muted); }
+
     .nav { display:flex; justify-content:center; gap:10px; margin:12px 0 16px; flex-wrap:wrap; }
     .nav a { text-decoration:none; padding:8px 13px; border-radius:999px; border:1px solid #ddd6fe; background:#ede9fe; color:#5d2cc5; font-weight:600; }
     .nav a.active { background:var(--brand); color:#fff; border-color:var(--brand); }
@@ -38,6 +40,7 @@
     .section { margin-top:14px; }
     .title { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px; font-weight:800; }
     .count { font-size:12px; color:var(--muted); text-transform:uppercase; }
+
     .grid { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:10px; }
     .card { border:1px solid #e9d5ff; background:#fff; border-radius:12px; padding:12px 10px; min-height:122px; text-align:center; cursor:pointer; position:relative; }
     .logoWrap { width:84px; height:58px; margin:0 auto 8px; border:1px solid #eef0f4; border-radius:9px; padding:7px; display:flex; align-items:center; justify-content:center; }
@@ -46,63 +49,50 @@
     .name { font-size:12.5px; font-weight:700; color:#374151; line-height:1.25; }
     .tag { margin-top:6px; font-size:10px; text-transform:uppercase; font-weight:700; color:#5d2cc5; border:1px solid #ddd6fe; background:#f5f3ff; border-radius:999px; display:inline-block; padding:2px 7px; }
 
- .tooltip {
-  position: fixed;
-  left: 12px;
-  top: 12px;
-  z-index: 9999;
-  width: min(560px, calc(100vw - 24px));
-  max-height: calc(100vh - 24px);
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  background: rgba(15, 23, 42, 0.96);
-  color: #fff;
-  border-radius: 12px;
-  padding: 12px 14px;
-  box-shadow: 0 14px 28px rgba(0,0,0,0.35);
-  line-height: 1.35;
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  transform: translateY(6px);
-  transition: opacity 140ms ease, transform 140ms ease, visibility 140ms ease;
-}
-.card:hover .tooltip,
-.card.tooltip-open .tooltip {
-  opacity: 1;
-  visibility: visible;
-  transform: translateY(0);
-  pointer-events: auto;
-}
+    .tooltip {
+      position: fixed;
+      left: 12px;
+      top: 12px;
+      z-index: 9999;
+      width: min(560px, calc(100vw - 24px));
+      max-height: calc(100vh - 24px);
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      background: rgba(15, 23, 42, 0.96);
+      color: #fff;
+      border-radius: 12px;
+      padding: 12px 14px;
+      box-shadow: 0 14px 28px rgba(0,0,0,0.35);
+      line-height: 1.35;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transform: translateY(6px);
+      transition: opacity 140ms ease, transform 140ms ease, visibility 140ms ease;
+    }
 
-    .tooltip strong { display:block; margin-bottom:6px; }
+    .tooltip .section-label { font-weight:800; display:block; margin-bottom:6px; }
 
-    .tooltip .section-label {
-  font-weight: 800;
-  display: block;
-  margin-bottom: 6px;
-}
+    @media (hover:hover) {
+      .card:hover .tooltip {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        transform: translateY(0);
+      }
+    }
 
-    @media (hover: hover) {
-  .card:hover .tooltip {
-    opacity: 1;
-    pointer-events: auto;
-    transform: translateY(0);
-  }
-}
+    .card.show-tip .tooltip {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
 
-.card.show-tip .tooltip {
-  opacity: 1;
-  pointer-events: auto;
-  transform: translateY(0);
-}
     .divider { border-top:2px dashed #c4b5fd; margin:20px 0 10px; }
 
     @media (max-width:1100px) { .grid { grid-template-columns:repeat(3,minmax(0,1fr)); } }
-    @media (max-width:760px) {
-      .metrics { grid-template-columns:1fr; }
-      .grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
-    }
+    @media (max-width:760px) { .metrics { grid-template-columns:1fr; } .grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
     @media (max-width:520px) { .grid { grid-template-columns:1fr; } }
   </style>
 </head>
@@ -210,31 +200,26 @@
       });
     }
 
-function positionTooltip(card, tip) {
-  const pad = 12;
-  const gap = 10;
-  const cardRect = card.getBoundingClientRect();
+    function positionTooltip(card, tip) {
+      const pad = 12;
+      const gap = 10;
+      const cardRect = card.getBoundingClientRect();
 
-  // Keep tooltip sized to viewport
-  tip.style.width = `min(560px, calc(100vw - 24px))`;
-  tip.style.maxHeight = `${Math.max(220, window.innerHeight - pad * 2)}px`;
+      tip.style.width = `min(560px, calc(100vw - 24px))`;
+      tip.style.maxHeight = `${Math.max(220, window.innerHeight - pad * 2)}px`;
 
-  const tipRect = tip.getBoundingClientRect();
+      const tipRect = tip.getBoundingClientRect();
 
-  // Prefer above card, otherwise below
-  let top = cardRect.top - tipRect.height - gap;
-  if (top < pad) top = cardRect.bottom + gap;
+      let top = cardRect.top - tipRect.height - gap;
+      if (top < pad) top = cardRect.bottom + gap;
+      top = Math.max(pad, Math.min(top, window.innerHeight - tipRect.height - pad));
 
-  // Clamp vertically
-  top = Math.max(pad, Math.min(top, window.innerHeight - tipRect.height - pad));
+      let left = cardRect.left + (cardRect.width - tipRect.width) / 2;
+      left = Math.max(pad, Math.min(left, window.innerWidth - tipRect.width - pad));
 
-  // Center over card, then clamp left/right
-  let left = cardRect.left + (cardRect.width - tipRect.width) / 2;
-  left = Math.max(pad, Math.min(left, window.innerWidth - tipRect.width - pad));
-
-  tip.style.left = `${left}px`;
-  tip.style.top = `${top}px`;
-}
+      tip.style.left = `${left}px`;
+      tip.style.top = `${top}px`;
+    }
 
     function toPassed(row) {
       const raw = row["Passed"];
@@ -290,6 +275,7 @@ function positionTooltip(card, tip) {
 
       const card = document.createElement("div");
       card.className = "card";
+
       card.addEventListener("click", (e) => {
         if (!isTouchUi()) {
           safeOpen(url);
@@ -303,15 +289,17 @@ function positionTooltip(card, tip) {
         e.stopPropagation();
         closeAllTooltips(card);
         card.classList.add("show-tip");
+        positionTooltip(card, tooltip);
       });
 
       const wrap = document.createElement("div");
       wrap.className = "logoWrap";
+
       const img = document.createElement("img");
       img.className = "logo";
       img.alt = display;
       img.loading = "lazy";
-      img.referrerPolicy = "no-referrer";
+
       const ph = document.createElement("div");
       ph.className = "placeholder";
       ph.textContent = display;
@@ -326,6 +314,7 @@ function positionTooltip(card, tip) {
 
       img.onload = () => { img.style.display = "block"; ph.style.display = "none"; };
       img.onerror = () => { if (!nextLogo()) { img.style.display = "none"; ph.style.display = "block"; } };
+
       const hasInitialLogo = nextLogo();
       img.style.display = hasInitialLogo ? "block" : "none";
       ph.style.display = hasInitialLogo ? "none" : "block";
@@ -343,31 +332,19 @@ function positionTooltip(card, tip) {
       const noteText = notes || "No call notes available.";
       const decisionText = decision || "No decision notes available.";
       tooltip.innerHTML =
-        "<strong>Call Notes</strong>" +
+        '<span class="section-label">Call Notes</span>' +
         escapeHtml(noteText).replaceAll("\n", "<br>") +
-        "<br><br><strong>Decision And Reason</strong><br>" +
+        '<br><br><span class="section-label">Decision And Reason</span>' +
         escapeHtml(decisionText).replaceAll("\n", "<br>");
       tooltip.addEventListener("click", (e) => e.stopPropagation());
 
       card.addEventListener("mouseenter", () => {
-  if (!isTouchUi()) positionTooltip(card, tooltip);
-});
+        if (!isTouchUi()) positionTooltip(card, tooltip);
+      });
 
-card.addEventListener("mousemove", () => {
-  if (!isTouchUi()) positionTooltip(card, tooltip);
-});
-
-window.addEventListener("resize", () => {
-  if (card.classList.contains("show-tip") || card.matches(":hover")) {
-    positionTooltip(card, tooltip);
-  }
-});
-
-window.addEventListener("scroll", () => {
-  if (card.classList.contains("show-tip") || card.matches(":hover")) {
-    positionTooltip(card, tooltip);
-  }
-}, { passive: true });
+      card.addEventListener("mousemove", () => {
+        if (!isTouchUi()) positionTooltip(card, tooltip);
+      });
 
       wrap.appendChild(img);
       wrap.appendChild(ph);
@@ -375,18 +352,28 @@ window.addEventListener("scroll", () => {
       card.appendChild(nameEl);
       card.appendChild(tag);
       card.appendChild(tooltip);
+
       return card;
+    }
+
+    function repositionOpenTooltips() {
+      document.querySelectorAll(".card.show-tip").forEach((card) => {
+        const tip = card.querySelector(".tooltip");
+        if (tip) positionTooltip(card, tip);
+      });
+      if (!isTouchUi()) {
+        document.querySelectorAll(".card:hover").forEach((card) => {
+          const tip = card.querySelector(".tooltip");
+          if (tip) positionTooltip(card, tip);
+        });
+      }
     }
 
     async function loadAndRender() {
       setStatus("", "Loading data…");
 
       const cb = "cb_" + Math.random().toString(16).slice(2);
-      const url = buildApiUrl(CONFIG.endpointBase, {
-        view: CONFIG.view,
-        callback: cb,
-        t: String(Date.now())
-      });
+      const url = buildApiUrl(CONFIG.endpointBase, { view: CONFIG.view, callback: cb, t: String(Date.now()) });
 
       let payload;
       try {
@@ -433,8 +420,11 @@ window.addEventListener("scroll", () => {
     }
 
     document.addEventListener("click", () => closeAllTooltips());
+    window.addEventListener("resize", repositionOpenTooltips);
+    window.addEventListener("scroll", repositionOpenTooltips, { passive: true });
 
     loadAndRender();
   </script>
 </body>
 </html>
+
