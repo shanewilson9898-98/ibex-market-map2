@@ -48,6 +48,8 @@
 
  .tooltip {
   position: fixed;
+  left: 12px;
+  top: 12px;
   z-index: 9999;
   width: min(560px, calc(100vw - 24px));
   max-height: calc(100vh - 24px);
@@ -65,7 +67,6 @@
   transform: translateY(6px);
   transition: opacity 140ms ease, transform 140ms ease, visibility 140ms ease;
 }
-
 .card:hover .tooltip,
 .card.tooltip-open .tooltip {
   opacity: 1;
@@ -207,25 +208,25 @@ function positionTooltip(card, tip) {
   const gap = 10;
   const cardRect = card.getBoundingClientRect();
 
-  // Set max height first, then measure final tooltip size
+  // Keep tooltip sized to viewport
+  tip.style.width = `min(560px, calc(100vw - 24px))`;
   tip.style.maxHeight = `${Math.max(220, window.innerHeight - pad * 2)}px`;
 
   const tipRect = tip.getBoundingClientRect();
 
-  // Prefer above; if not enough space, place below.
+  // Prefer above card, otherwise below
   let top = cardRect.top - tipRect.height - gap;
-  if (top < pad) {
-    top = cardRect.bottom + gap;
-  }
-  // Final clamp to viewport
+  if (top < pad) top = cardRect.bottom + gap;
+
+  // Clamp vertically
   top = Math.max(pad, Math.min(top, window.innerHeight - tipRect.height - pad));
 
-  // Center horizontally, then clamp
+  // Center over card, then clamp left/right
   let left = cardRect.left + (cardRect.width - tipRect.width) / 2;
   left = Math.max(pad, Math.min(left, window.innerWidth - tipRect.width - pad));
 
-  tip.style.top = `${top}px`;
   tip.style.left = `${left}px`;
+  tip.style.top = `${top}px`;
 }
 
     function toPassed(row) {
@@ -342,8 +343,24 @@ function positionTooltip(card, tip) {
       tooltip.addEventListener("click", (e) => e.stopPropagation());
 
       card.addEventListener("mouseenter", () => {
-        if (!isTouchUi()) positionTooltip(card, tooltip);
-      });
+  if (!isTouchUi()) positionTooltip(card, tooltip);
+});
+
+card.addEventListener("mousemove", () => {
+  if (!isTouchUi()) positionTooltip(card, tooltip);
+});
+
+window.addEventListener("resize", () => {
+  if (card.classList.contains("show-tip") || card.matches(":hover")) {
+    positionTooltip(card, tooltip);
+  }
+});
+
+window.addEventListener("scroll", () => {
+  if (card.classList.contains("show-tip") || card.matches(":hover")) {
+    positionTooltip(card, tooltip);
+  }
+}, { passive: true });
 
       wrap.appendChild(img);
       wrap.appendChild(ph);
