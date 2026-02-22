@@ -232,25 +232,34 @@
       return ["1", "true", "yes", "y", "passed", "pass"].includes(v);
     }
 
-    function logoCandidates(company) {
-      const out = [];
-      const explicitA = String(company["Logo link"] || "").trim();
-      const explicitB = String(company["logo"] || "").trim();
-      if (explicitA) out.push(explicitA);
-      if (explicitB && explicitB !== explicitA) out.push(explicitB);
+    function normalizeLogoUrl(u) {
+  const v = String(u || "").trim();
+  if (!v) return "";
+  if (v.startsWith("//")) return "https:" + v;
+  if (v.startsWith("http://")) return "https://" + v.slice(7);
+  return v;
+}
 
-      const raw = String(company["Url"] || "").trim();
-      const withScheme = /^[a-z]+:\/\//i.test(raw) ? raw : (raw ? "https://" + raw : "");
-      try {
-        const domain = new URL(withScheme).hostname.replace(/^www\./, "");
-        if (domain) {
-          out.push("https://logo.clearbit.com/" + encodeURIComponent(domain));
-          out.push("https://www.google.com/s2/favicons?sz=128&domain=" + encodeURIComponent(domain));
-          out.push("https://icons.duckduckgo.com/ip3/" + encodeURIComponent(domain) + ".ico");
-        }
-      } catch (e) {}
-      return out;
+function logoCandidates(company) {
+  const out = [];
+  const explicitA = normalizeLogoUrl(company["Logo link"]);
+  const explicitB = normalizeLogoUrl(company["logo"]);
+  if (explicitA) out.push(explicitA);
+  if (explicitB && explicitB !== explicitA) out.push(explicitB);
+
+  const raw = String(company["Url"] || "").trim();
+  const withScheme = /^[a-z]+:\/\//i.test(raw) ? raw : (raw ? "https://" + raw : "");
+  try {
+    const domain = new URL(withScheme).hostname.replace(/^www\./, "");
+    if (domain) {
+      out.push("https://logo.clearbit.com/" + encodeURIComponent(domain));
+      out.push("https://www.google.com/s2/favicons?sz=128&domain=" + encodeURIComponent(domain));
+      out.push("https://icons.duckduckgo.com/ip3/" + encodeURIComponent(domain) + ".ico");
     }
+  } catch (e) {}
+
+  return [...new Set(out)];
+}
 
     function positionTooltip(card, tip) {
       const pad = 12;
@@ -327,40 +336,56 @@
       img.alt = display;
       img.loading = "lazy";
       img.decoding = "async";
-      img.referrerPolicy = "no-referrer";
 
       const ph = document.createElement("div");
       ph.className = "placeholder";
       ph.textContent = display;
 
-      const cands = logoCandidates(company);
-      let i = 0;
+      onst cands = logoCandidates(company);
+let i = 0;
 
-      function setLogoVisible() {
-        img.style.display = "block";
-        ph.style.display = "none";
-      }
-      function setPlaceholderVisible() {
-        img.style.display = "none";
-        ph.style.display = "block";
-      }
+function setLogoVisible() {
+  img.style.display = "block";
+  ph.style.display = "none";
+}
 
-      function tryNextLogo() {
-        if (i >= cands.length) {
-          setPlaceholderVisible();
-          return;
-        }
-        img.src = cands[i++];
-        if (img.complete) {
-          if (img.naturalWidth > 0) setLogoVisible();
-          else tryNextLogo();
-        }
-      }
+function setPlaceholderVisible() {
+  img.style.display = "none";
+  ph.style.display = "block";
+}
 
-      img.onload = () => setLogoVisible();
-      img.onerror = () => tryNextLogo();
-      tryNextLogo();
+function tryNextLogo() {
+  if (i >= cands.length) {
+    setPlaceholderVisible();
+    return;
+  }
 
+  const src = cands[i++];
+  const probe = new Image();
+
+  // Mobile-safe: if a host hangs, fail over quickly
+  const t = setTimeout(() => {
+    probe.onload = null;
+    probe.onerror = null;
+    tryNextLogo();
+  }, 3000);
+
+  probe.onload = () => {
+    clearTimeout(t);
+    img.src = src;
+    setLogoVisible();
+  };
+
+  probe.onerror = () => {
+    clearTimeout(t);
+    tryNextLogo();
+  };
+
+  probe.src = src;
+}
+
+setPlaceholderVisible();
+tryNextLogo();
       const nameEl = document.createElement("div");
       nameEl.className = "name";
       nameEl.textContent = display;
