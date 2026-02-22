@@ -5,101 +5,207 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Shane Wilson for Ibex: Winter 2026 Market Map</title>
   <style>
-    :root {
-      --bg: #f8fafc;
-      --surface: #fff;
-      --ink: #111827;
-      --muted: #6b7280;
-      --line: #e5e7eb;
-      --brand: #7c3aed;
-      --brand-soft: #ede9fe;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, sans-serif;
-      background: radial-gradient(1000px 450px at top, #f3f0ff 0%, var(--bg) 45%, #f8fafc 100%);
-      color: var(--ink);
-      padding: 20px 12px 28px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", sans-serif;
+      background: #fff;
+      color: #111827;
+      padding: 28px 14px 36px;
     }
-    .container { max-width: 1400px; margin: 0 auto; }
-    .header { text-align: center; margin-bottom: 18px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
-    h1 { font-size: clamp(1.6rem, 4vw, 2.6rem); color: #5b35ba; margin-bottom: 8px; }
-    .subtitle { color: var(--muted); }
+    .container { max-width: 1300px; margin: 0 auto; }
+
+    .header {
+      text-align: center;
+      margin-bottom: 18px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .header h1 {
+      font-size: clamp(1.7rem, 4.2vw, 2.8rem);
+      color: #5b35ba;
+      margin-bottom: 6px;
+    }
+    .subtitle { color: #6b7280; }
+
     .nav {
-      display: flex; justify-content: center; gap: 10px; margin: 12px 0 16px; flex-wrap: wrap;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 12px 0 16px;
+      flex-wrap: wrap;
     }
     .nav a {
-      text-decoration: none; padding: 8px 13px; border-radius: 999px;
-      border: 1px solid #ddd6fe; background: #ede9fe; color: #5d2cc5; font-weight: 600;
+      text-decoration: none;
+      padding: 8px 13px;
+      border-radius: 999px;
+      border: 1px solid #ddd6fe;
+      background: #ede9fe;
+      color: #5d2cc5;
+      font-weight: 600;
     }
-    .nav a.active { background: var(--brand); color: #fff; border-color: var(--brand); }
+    .nav a.active {
+      background: #7c3aed;
+      color: #fff;
+      border-color: #7c3aed;
+    }
 
     .status {
-      margin: 0 auto 14px; max-width: 900px; border: 1px solid var(--line);
-      background: #fff; padding: 11px 13px; border-radius: 10px; font-size: 14px;
+      margin: 0 auto 14px;
+      max-width: 960px;
+      border: 1px solid #e5e7eb;
+      background: #fff;
+      padding: 11px 13px;
+      border-radius: 10px;
+      font-size: 14px;
     }
     .status.error { border-color: #fecaca; background: #fff1f2; color: #991b1b; }
     .status.ok { border-color: #bbf7d0; background: #ecfdf5; color: #065f46; }
 
-.controls {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin: 10px auto 18px;
-  align-items: center;
-  max-width: 1240px;
-}
-.search {
-  width: 100%;
-}
-.search input {
-  width: 100%;
- padding: 11px 13px; border-radius: 12px; border: 1px solid var(--line);
-      font-size: 14px; outline: none; background: #fff;
+    .controls {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      margin: 0 auto 16px;
+      max-width: 1200px;
     }
-    .pillbar { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; width: 100%; }
+    .searchWrap {
+      width: 100%;
+      max-width: 760px;
+    }
+    #search {
+      width: 100%;
+      padding: 11px 13px;
+      border-radius: 12px;
+      border: 1px solid #d1d5db;
+      font-size: 14px;
+      outline: none;
+    }
+    #search:focus { border-color: #a78bfa; box-shadow: 0 0 0 3px rgba(167,139,250,.2); }
+
+    .pillbar {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
     .pill {
-      display: inline-block; padding: 8px 12px; border-radius: 999px;
-      border: 1px solid #ddd6fe; background: var(--brand-soft); color: #5d2cc5;
-      font-size: 12px; font-weight: 700; text-decoration: none;
+      border: 1px solid #ddd6fe;
+      background: #ede9fe;
+      color: #5d2cc5;
+      border-radius: 999px;
+      padding: 7px 12px;
+      font-weight: 700;
+      font-size: 12px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .pill.active {
+      background: #7c3aed;
+      color: #fff;
+      border-color: #7c3aed;
     }
 
-    .section { margin-bottom: 16px; }
-    .section-header { display: flex; justify-content: space-between; margin-bottom: 8px; }
-    .section-title { font-weight: 800; }
-    .section-count { color: var(--muted); font-size: 12px; text-transform: uppercase; }
+    .section { margin: 16px 0 8px; }
+    .title {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 8px;
+      font-weight: 800;
+      gap: 12px;
+    }
+    .count {
+      font-size: 12px;
+      color: #6b7280;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
 
-    .grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
     .card {
-      border: 1px solid #e9d5ff; background: #fff; border-radius: 12px; padding: 12px 10px;
-      min-height: 122px; text-align: center; cursor: pointer; position: relative;
-    }
-    .logo-shell {
-      width: 84px; height: 58px; margin: 0 auto 8px; border: 1px solid #eef0f4;
-      border-radius: 9px; padding: 7px; display: flex; align-items: center; justify-content: center;
+      border: 1px solid #e9d5ff;
       background: #fff;
+      border-radius: 12px;
+      padding: 12px 10px;
+      min-height: 122px;
+      text-align: center;
+      cursor: pointer;
+      position: relative;
+    }
+    .logoWrap {
+      width: 84px;
+      height: 58px;
+      margin: 0 auto 8px;
+      border: 1px solid #eef0f4;
+      border-radius: 9px;
+      padding: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
     }
     .logo { width: 100%; height: 100%; object-fit: contain; display: none; }
     .placeholder { font-size: 11px; color: #7c3aed; font-weight: 700; line-height: 1.2; }
     .name { font-size: 12.5px; font-weight: 700; color: #374151; line-height: 1.25; }
 
     .tooltip {
-      position: absolute; left: 50%; bottom: calc(100% + 10px); transform: translateX(var(--tip-x, -50%));
-      width: min(92vw, 420px); background: rgba(17,24,39,.96); color: #fff; padding: 12px;
-      border-radius: 12px; font-size: 12px; line-height: 1.35; box-shadow: 0 10px 30px rgba(0,0,0,.25);
-      opacity: 0; pointer-events: none; transition: opacity .15s ease, transform .15s ease; z-index: 20; text-align: left;
-      max-height: 320px; overflow: auto;
+      position: fixed;
+      left: 12px;
+      top: 12px;
+      z-index: 9999;
+      width: 560px;
+      max-width: calc(100vw - 24px);
+      max-height: calc(100vh - 24px);
+      overflow-y: auto;
+      background: rgba(15, 23, 42, 0.96);
+      color: #fff;
+      border-radius: 12px;
+      padding: 12px 14px;
+      box-shadow: 0 14px 28px rgba(0, 0, 0, 0.35);
+      line-height: 1.35;
+      text-align: left;
+      font-size: 12px;
+      white-space: pre-wrap;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transform: translateY(6px);
+      transition: opacity 120ms ease, transform 120ms ease, visibility 120ms ease;
     }
-    .card.show-tip .tooltip { opacity: 1; pointer-events: auto; transform: translateX(var(--tip-x, -50%)) translateY(-2px); }
-    @media (hover: hover) {
-      .card:hover .tooltip { opacity: 1; transform: translateX(var(--tip-x, -50%)) translateY(-2px); }
+    .tooltip h4 { font-size: 13px; margin-bottom: 6px; font-weight: 800; }
+    .tooltip-open .tooltip {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+      pointer-events: auto;
     }
 
+    .touch-note-backdrop {
+      position: fixed; inset: 0; background: rgba(15, 23, 42, 0.45);
+      z-index: 10050; display: none; padding: 16px; align-items: center; justify-content: center;
+    }
+    .touch-note-backdrop.open { display: flex; }
+    .touch-note-modal {
+      width: min(92vw, 680px); max-height: 82vh; overflow: auto;
+      background: rgba(15, 23, 42, 0.97); color: #fff; border-radius: 14px;
+      padding: 14px 16px; box-shadow: 0 18px 40px rgba(0,0,0,0.45);
+    }
+    .touch-note-title { font-size: 14px; font-weight: 800; margin-bottom: 8px; }
+    .touch-note-body { white-space: pre-wrap; line-height: 1.35; font-size: 13px; }
+    .touch-note-hint { margin-top: 10px; font-size: 11px; color: #cbd5e1; }
 
-    @media (max-width:1100px) { .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-    @media (max-width:760px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-    @media (max-width:520px) { .grid { grid-template-columns: 1fr; } }
-    
+    @media (hover: none), (pointer: coarse) {
+      .tooltip { display: none !important; }
+    }
+
+    @media (max-width: 1100px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 640px) { .grid { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
@@ -107,338 +213,374 @@
     <div class="header">
       <h1>Shane Wilson for Ibex: Winter 2026 Market Map</h1>
       <div class="subtitle">Landscape of relevant companies, grouped by category</div>
-      <div class="nav">
-        <a class="active" href="index.html">Market Map</a>
-        <a href="sales_funnel.html">Deal Flow</a>
-      </div>
     </div>
 
-    <div id="status" class="status">Loading data…</div>
+    <div class="nav">
+      <a class="active" href="index.html">Market Map</a>
+      <a href="sales_funnel.html">Deal Flow</a>
+    </div>
+
+    <div id="status" class="status">Loading data...</div>
 
     <div class="controls">
-      <div class="search">
+      <div class="searchWrap">
         <input id="search" type="text" placeholder="Search companies (name, about, category)" />
       </div>
-      <div class="pillbar" id="pillbar"></div>
+      <div id="pillbar" class="pillbar"></div>
     </div>
 
     <div id="sections"></div>
   </div>
 
-  <script>
-    const CONFIG = {
-      endpointBase: "https://script.google.com/macros/s/AKfycbyRF62OEmU2SFH3juvFeCmklF4nKLhFr-6VEGNFHES4ZCi5D0-1dOx7LK4fSs_fiDJN/exec",
+  <div id="touch-note-backdrop" class="touch-note-backdrop" aria-hidden="true">
+    <div class="touch-note-modal" role="dialog" aria-modal="true" aria-label="Company Description">
+      <div class="touch-note-title" id="touch-note-title">Company Description</div>
+      <div class="touch-note-body" id="touch-note-body"></div>
+      <div class="touch-note-hint">Tap the same company again to open its website.</div>
+    </div>
+  </div>
 
+  <script>
+    var CONFIG = {
+      endpointBase: "https://script.google.com/macros/s/AKfycbyRF62OEmU2SFH3juvFeCmklF4nKLhFr-6VEGNFHES4ZCi5D0-1dOx7LK4fSs_fiDJN/exec",
+      view: "marketmap"
     };
 
-    const $ = (id) => document.getElementById(id);
+    function $(id) { return document.getElementById(id); }
+
+    var TOUCH_UI =
+      window.matchMedia("(hover: none), (pointer: coarse)").matches ||
+      ("ontouchstart" in window) ||
+      (navigator.maxTouchPoints > 0);
+
+    var armedTouchCardId = null;
+    var allRows = [];
+    var activeCategory = "All";
 
     function setStatus(type, text) {
-      const el = $("status");
+      var el = $("status");
       el.className = "status" + (type ? " " + type : "");
       el.textContent = text;
     }
 
-    function escapeHtml(str) {
-      return String(str ?? "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
-
     function buildApiUrl(base, params) {
-      const u = new URL(base);
-      Object.keys(params).forEach(k => u.searchParams.set(k, params[k]));
+      var u = new URL(base);
+      var keys = Object.keys(params);
+      for (var i = 0; i < keys.length; i++) u.searchParams.set(keys[i], params[keys[i]]);
       return u.toString();
     }
 
     function loadJsonp(url, callbackName) {
-      return new Promise((resolve, reject) => {
-        const script = document.createElement("script");
-        script.src = url;
-        script.async = true;
-
-        const timeout = setTimeout(() => {
+      return new Promise(function(resolve, reject) {
+        var script = document.createElement("script");
+        var timeout = setTimeout(function() {
           cleanup();
-          reject(new Error("JSONP request timed out"));
-        }, 15000);
+          reject(new Error("JSONP timeout"));
+        }, 20000);
 
         function cleanup() {
           clearTimeout(timeout);
           script.remove();
-          try { delete window[callbackName]; } catch (e) { window[callbackName] = undefined; }
+          window[callbackName] = undefined;
         }
 
-        window[callbackName] = (data) => { cleanup(); resolve(data); };
-        script.onerror = () => { cleanup(); reject(new Error("Failed to load JSONP script")); };
+        window[callbackName] = function(data) {
+          cleanup();
+          resolve(data);
+        };
+
+        script.onerror = function() {
+          cleanup();
+          reject(new Error("JSONP script failed to load"));
+        };
+
+        script.src = url;
+        script.async = true;
         document.head.appendChild(script);
       });
     }
 
-    function slugify(s) {
-      return String(s || "")
-        .toLowerCase()
-        .trim()
-        .replace(/&/g, "and")
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/^-+|-+$/g, "");
+    function safeOpen(url) {
+      if (!url) return;
+      try { window.open(new URL(url, location.href).href, "_blank", "noopener,noreferrer"); } catch (e) {}
     }
 
-function safeOpen(url) {
-  if (!url) return;
-  try { window.open(new URL(url, location.href).href, "_blank", "noopener,noreferrer"); } catch (e) {}
-}
-
-function isTouchUi() {
-  return window.matchMedia("(hover: none), (pointer: coarse)").matches;
-}
-
-function closeAllTooltips(exceptCard) {
-  document.querySelectorAll(".card.show-tip").forEach((el) => {
-    if (exceptCard && el === exceptCard) return;
-    el.classList.remove("show-tip");
-  });
-}
-
-function positionTooltip(card, tooltip) {
-  const pad = 14;
-  const vw = window.innerWidth || document.documentElement.clientWidth;
-  const cardRect = card.getBoundingClientRect();
-
-  // Use a stable width so clamp math matches rendering.
-  const tipWidth = Math.min(420, Math.max(260, vw - (pad * 2)));
-  tooltip.style.width = tipWidth + "px";
-
-  const center = cardRect.left + (cardRect.width / 2);
-  const minCenter = pad + (tipWidth / 2);
-  const maxCenter = vw - pad - (tipWidth / 2);
-  const clamped = Math.max(minCenter, Math.min(maxCenter, center));
-  const dx = Math.round(clamped - center);
-
-  tooltip.style.setProperty("--tip-x", `calc(-50% + ${dx}px)`);
-}
-
-    function deriveDomain(rawUrl) {
-      const s = String(rawUrl || "").trim();
-      if (!s) return "";
-      const withScheme = /^[a-z]+:\/\//i.test(s) ? s : ("https://" + s);
-      try { return new URL(withScheme).hostname.replace(/^www\./i, ""); } catch (e) { return ""; }
+    function normalizeLogoUrl(u) {
+      var v = String(u || "").trim();
+      if (!v) return "";
+      if (v.indexOf("//") === 0) return "https:" + v;
+      if (v.indexOf("http://") === 0) return "https://" + v.slice(7);
+      return v;
     }
 
-    function normalizeHttpUrl(rawUrl) {
-      const s = String(rawUrl || "").trim();
-      if (!s) return "";
-      const withScheme = /^[a-z]+:\/\//i.test(s) ? s : ("https://" + s);
+    function logoCandidates(company) {
+      var out = [];
+      var a = normalizeLogoUrl(company["Logo link"]);
+      var b = normalizeLogoUrl(company["logo"]);
+      if (a) out.push(a);
+      if (b && b !== a) out.push(b);
+
+      var raw = String(company["Url"] || "").trim();
+      var withScheme = /^[a-z]+:\/\//i.test(raw) ? raw : (raw ? "https://" + raw : "");
       try {
-        const u = new URL(withScheme);
-        if (!/^https?:$/i.test(u.protocol)) return "";
-        return u.toString();
-      } catch (e) {
-        return "";
-      }
-    }
+        var domain = new URL(withScheme).hostname.replace(/^www\./, "");
+        if (domain) out.push("https://www.google.com/s2/favicons?sz=128&domain=" + encodeURIComponent(domain));
+      } catch (e) {}
 
-    function isDirectImageUrl(rawUrl) {
-      const u = normalizeHttpUrl(rawUrl);
-      if (!u) return false;
-      try {
-        const parsed = new URL(u);
-        const host = parsed.hostname.toLowerCase();
-        const path = parsed.pathname.toLowerCase();
-        if (
-          host.includes("linkedin.com") ||
-          host.includes("pitchbook.com") ||
-          host.includes("crunchbase.com")
-        ) {
-          return false;
+      var uniq = [];
+      var seen = {};
+      for (var i = 0; i < out.length; i++) {
+        if (!seen[out[i]]) {
+          seen[out[i]] = true;
+          uniq.push(out[i]);
         }
-        if (path.includes("/profile") || path.includes("/people") || path.includes("/person") || path.includes("/company")) return false;
-        return true;
-      } catch (e) {
-        return false;
       }
+      return uniq;
     }
 
-function createLogoFallback(img, logoUrls, companyUrl) {
-  const candidates = [];
+    function positionTooltip(card, tip) {
+      var pad = 12;
+      var gap = 10;
+      var cardRect = card.getBoundingClientRect();
 
-  (Array.isArray(logoUrls) ? logoUrls : [logoUrls]).forEach((logoUrl) => {
-    const logoCandidate = normalizeHttpUrl(logoUrl);
-    if (logoCandidate) candidates.push(logoCandidate);
-  });
+      var maxWidth = Math.max(280, Math.min(560, window.innerWidth - (pad * 2)));
+      tip.style.width = maxWidth + "px";
+      tip.style.maxHeight = Math.max(220, window.innerHeight - (pad * 2)) + "px";
 
-  const domain = deriveDomain(companyUrl);
-  if (domain) {
-    candidates.push("https://logo.clearbit.com/" + domain);
-    candidates.push("https://www.google.com/s2/favicons?sz=128&domain=" + encodeURIComponent(domain));
-    candidates.push("https://icons.duckduckgo.com/ip3/" + encodeURIComponent(domain) + ".ico");
-  }
+      var tipRect = tip.getBoundingClientRect();
 
-  const unique = [];
-  const seen = new Set();
-  candidates.forEach((c) => {
-    if (!c || seen.has(c)) return;
-    seen.add(c);
-    unique.push(c);
-  });
+      var top = cardRect.top - tipRect.height - gap;
+      if (top < pad) top = cardRect.bottom + gap;
+      top = Math.max(pad, Math.min(top, window.innerHeight - tipRect.height - pad));
 
-  let i = 0;
-  return () => {
-    if (i >= unique.length) return false;
-    img.src = unique[i++];
-    return true;
-  };
-}
+      var left = cardRect.left + (cardRect.width - tipRect.width) / 2;
+      left = Math.max(pad, Math.min(left, window.innerWidth - tipRect.width - pad));
 
-function makeCard(company) {
+      tip.style.top = top + "px";
+      tip.style.left = left + "px";
+    }
 
-      const name = String(company["Company Name"] || "").trim() || "Unknown";
-      const url = String(company["Url"] || "").trim();
-      const logoMerged = String(company["Logo link merged"] || "").trim();
-      const logoLink = String(company["Logo link"] || "").trim();
-      const logoRaw = String(company["logo"] || "").trim();
-      const about = String(company["About"] || "").trim();
+    var touchBackdrop = $("touch-note-backdrop");
+    var touchTitle = $("touch-note-title");
+    var touchBody = $("touch-note-body");
 
-      const card = document.createElement("div");
+    function showTouchNote(companyName, aboutText) {
+      touchTitle.textContent = companyName || "Company Description";
+      touchBody.textContent = aboutText || "";
+      touchBackdrop.classList.add("open");
+      touchBackdrop.setAttribute("aria-hidden", "false");
+      touchBackdrop.scrollTop = 0;
+      document.body.style.overflow = "hidden";
+    }
+
+    function hideTouchNote() {
+      touchBackdrop.classList.remove("open");
+      touchBackdrop.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+    }
+
+    touchBackdrop.addEventListener("click", function(e) {
+      if (e.target === touchBackdrop) {
+        hideTouchNote();
+        armedTouchCardId = null;
+      }
+    });
+
+    function makeCard(company) {
+      var name = String(company["Company Name"] || "Unknown").trim();
+      var about = String(company["About"] || "").trim();
+      var category = String(company["Category"] || "Uncategorized").trim();
+      var url = String(company["Url"] || "").trim();
+      var cardId = String(company["_id"] || (name + "|" + category));
+
+      var card = document.createElement("div");
       card.className = "card";
-      card.tabIndex = 0;
-card.addEventListener("click", (e) => {
-  if (!isTouchUi()) {
-    safeOpen(url);
-    return;
-  }
-  if (card.classList.contains("show-tip")) {
-    safeOpen(url);
-    return;
-  }
-  e.preventDefault();
-  e.stopPropagation();
-  closeAllTooltips(card);
-  card.classList.add("show-tip");
-});
-      card.addEventListener("keydown", (e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          safeOpen(url);
-        }
-      });
 
-      const logoShell = document.createElement("div");
-      logoShell.className = "logo-shell";
+      var wrap = document.createElement("div");
+      wrap.className = "logoWrap";
 
-      const img = document.createElement("img");
+      var img = document.createElement("img");
       img.className = "logo";
       img.alt = name;
       img.loading = "lazy";
-      img.referrerPolicy = "no-referrer";
+      img.decoding = "async";
 
-      const placeholder = document.createElement("div");
-      placeholder.className = "placeholder";
-      placeholder.textContent = name;
+      var ph = document.createElement("div");
+      ph.className = "placeholder";
+      ph.textContent = name;
 
-const tryNextLogo = createLogoFallback(img, [logoMerged, logoLink, logoRaw], url);
+      var cands = logoCandidates(company);
+      var i = 0;
 
-img.onload = () => {
-  img.style.display = "block";
-  placeholder.style.display = "none";
-};
+      function setLogoVisible() {
+        img.style.display = "block";
+        ph.style.display = "none";
+      }
 
-img.onerror = () => {
-  if (!tryNextLogo()) {
-    img.style.display = "none";
-    placeholder.style.display = "block";
-  }
-};
+      function setPlaceholderVisible() {
+        img.style.display = "none";
+        ph.style.display = "block";
+      }
 
-const hasInitialLogo = tryNextLogo();
-img.style.display = hasInitialLogo ? "block" : "none";
-placeholder.style.display = hasInitialLogo ? "none" : "block";
+      function tryNextLogo() {
+        if (i >= cands.length) {
+          setPlaceholderVisible();
+          return;
+        }
+        img.src = cands[i++];
+      }
 
+      img.onload = function() { setLogoVisible(); };
+      img.onerror = function() { tryNextLogo(); };
+      setPlaceholderVisible();
+      tryNextLogo();
 
-      const title = document.createElement("div");
-      title.className = "name";
-      title.textContent = name;
+      var nameEl = document.createElement("div");
+      nameEl.className = "name";
+      nameEl.textContent = name;
 
-      const tooltip = document.createElement("div");
-      tooltip.className = "tooltip";
-tooltip.innerHTML = "<strong>" + escapeHtml(name) + "</strong><br><br>" +
-  escapeHtml(about || "No description available.").replaceAll("\n", "<br>");
-tooltip.addEventListener("click", (e) => e.stopPropagation());
-      card.addEventListener("mouseenter", () => {
-        if (!isTouchUi()) positionTooltip(card, tooltip);
+      card.appendChild(wrap);
+      wrap.appendChild(img);
+      wrap.appendChild(ph);
+      card.appendChild(nameEl);
+
+      if (about) {
+        var tip = document.createElement("div");
+        tip.className = "tooltip";
+        tip.innerHTML = "<h4>Description</h4>" + about;
+        card.appendChild(tip);
+
+        if (!TOUCH_UI) {
+          card.addEventListener("mouseenter", function() {
+            card.classList.add("tooltip-open");
+            requestAnimationFrame(function() { positionTooltip(card, tip); });
+          });
+          card.addEventListener("mousemove", function() {
+            if (card.classList.contains("tooltip-open")) positionTooltip(card, tip);
+          });
+          card.addEventListener("mouseleave", function() {
+            card.classList.remove("tooltip-open");
+          });
+        }
+      }
+
+      card.addEventListener("click", function(e) {
+        if (!TOUCH_UI) {
+          safeOpen(url);
+          return;
+        }
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (!about) {
+          safeOpen(url);
+          return;
+        }
+
+        if (armedTouchCardId === cardId) {
+          safeOpen(url);
+          return;
+        }
+
+        armedTouchCardId = cardId;
+        showTouchNote(name, about);
       });
-
-      logoShell.appendChild(img);
-      logoShell.appendChild(placeholder);
-      card.appendChild(logoShell);
-      card.appendChild(title);
-      card.appendChild(tooltip);
 
       return card;
     }
 
-    function render(payload) {
-      const data = payload.marketMapData || {};
-      const categories = Object.keys(data);
+    function renderPills(categories) {
+      var bar = $("pillbar");
+      bar.innerHTML = "";
 
-      const pillbar = $("pillbar");
-      pillbar.innerHTML = "";
-      pillbar.innerHTML += '<a class="pill" href="#all">All</a>';
-      categories.forEach(cat => {
-        pillbar.innerHTML += '<a class="pill" href="#' + slugify(cat) + '">' + escapeHtml(cat) + "</a>";
+      var allBtn = document.createElement("button");
+      allBtn.className = "pill" + (activeCategory === "All" ? " active" : "");
+      allBtn.textContent = "All";
+      allBtn.addEventListener("click", function() {
+        activeCategory = "All";
+        render();
       });
+      bar.appendChild(allBtn);
 
-      const sections = $("sections");
+      for (var i = 0; i < categories.length; i++) {
+        (function(cat) {
+          var btn = document.createElement("button");
+          btn.className = "pill" + (activeCategory === cat ? " active" : "");
+          btn.textContent = cat;
+          btn.addEventListener("click", function() {
+            activeCategory = cat;
+            render();
+          });
+          bar.appendChild(btn);
+        })(categories[i]);
+      }
+    }
+
+    function render() {
+      var q = String($("search").value || "").trim().toLowerCase();
+      var sections = $("sections");
       sections.innerHTML = "";
 
-      categories.forEach(cat => {
-        const items = Array.isArray(data[cat]) ? data[cat] : [];
+      var grouped = {};
+      for (var i = 0; i < allRows.length; i++) {
+        var row = allRows[i];
+        var cat = String(row["Category"] || "Uncategorized").trim();
+        if (!grouped[cat]) grouped[cat] = [];
+        grouped[cat].push(row);
+      }
 
-        const section = document.createElement("div");
-        section.className = "section";
-        section.id = slugify(cat);
+      var cats = Object.keys(grouped).sort();
+      renderPills(cats);
 
-        section.innerHTML =
-          '<div class="section-header">' +
-            '<div class="section-title">' + escapeHtml(cat) + "</div>" +
-            '<div class="section-count">' + items.length + " companies</div>" +
-          "</div>";
+      for (var ci = 0; ci < cats.length; ci++) {
+        var category = cats[ci];
+        if (activeCategory !== "All" && activeCategory !== category) continue;
 
-        const grid = document.createElement("div");
+        var rows = grouped[category];
+        var filtered = [];
+        for (var r = 0; r < rows.length; r++) {
+          var item = rows[r];
+          var hay = (
+            String(item["Company Name"] || "") + " " +
+            String(item["About"] || "") + " " +
+            String(item["Category"] || "")
+          ).toLowerCase();
+
+          if (!q || hay.indexOf(q) !== -1) filtered.push(item);
+        }
+
+        if (!filtered.length) continue;
+
+        var sec = document.createElement("div");
+        sec.className = "section";
+
+        var title = document.createElement("div");
+        title.className = "title";
+        title.innerHTML = "<span>" + category + "</span><span class='count'>" + filtered.length + " companies</span>";
+
+        var grid = document.createElement("div");
         grid.className = "grid";
 
-        items.forEach(company => grid.appendChild(makeCard(company)));
+        for (var k = 0; k < filtered.length; k++) grid.appendChild(makeCard(filtered[k]));
 
-        section.appendChild(grid);
-        sections.appendChild(section);
-      });
-
-      const search = $("search");
-      search.addEventListener("input", () => {
-        const q = search.value.trim().toLowerCase();
-        const cards = sections.querySelectorAll(".card");
-        cards.forEach(card => {
-          const t = card.textContent.toLowerCase();
-          card.style.display = !q || t.includes(q) ? "" : "none";
-        });
-      });
+        sec.appendChild(title);
+        sec.appendChild(grid);
+        sections.appendChild(sec);
+      }
     }
 
     async function loadAndRender() {
-      setStatus("", "Loading data…");
+      setStatus("", "Loading data...");
 
-      const cb = "cb_" + Math.random().toString(16).slice(2);
-      const url = buildApiUrl(CONFIG.endpointBase, {
-        view: "marketmap",
-        callback: cb,
+      var url = buildApiUrl(CONFIG.endpointBase, {
+        view: CONFIG.view,
+        callback: "testCb",
         t: String(Date.now())
       });
 
-      let payload;
+      var payload;
       try {
-        payload = await loadJsonp(url, cb);
+        payload = await loadJsonp(url, "testCb");
       } catch (e) {
         setStatus("error", "Failed to load data: " + e.message);
         return;
@@ -449,12 +591,14 @@ tooltip.addEventListener("click", (e) => e.stopPropagation());
         return;
       }
 
-      render(payload);
+      var rows = Array.isArray(payload.companies) ? payload.companies : [];
+      allRows = rows;
+
+      render();
       setStatus("ok", "Loaded successfully.");
     }
 
-    document.addEventListener("click", () => closeAllTooltips());
-
+    $("search").addEventListener("input", render);
     loadAndRender();
   </script>
 </body>
