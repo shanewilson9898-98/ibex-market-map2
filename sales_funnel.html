@@ -76,7 +76,6 @@
       max-width: calc(100vw - 24px);
       max-height: calc(100vh - 24px);
       overflow-y: auto;
-      overscroll-behavior: contain;
       background: rgba(15, 23, 42, 0.96);
       color: #fff;
       border-radius: 12px;
@@ -85,7 +84,6 @@
       line-height: 1.35;
       text-align: left;
       font-size: 12px;
-      white-space: pre-wrap;
       opacity: 0;
       visibility: hidden;
       pointer-events: none;
@@ -113,7 +111,7 @@
       padding: 14px 16px; box-shadow: 0 18px 40px rgba(0,0,0,0.45);
     }
     .touch-note-title { font-size: 14px; font-weight: 800; margin-bottom: 8px; }
-    .touch-note-body { white-space: pre-wrap; line-height: 1.35; font-size: 13px; }
+    .touch-note-body { white-space: normal; line-height: 1.35; font-size: 13px; }
     .touch-note-hint { margin-top: 10px; font-size: 11px; color: #cbd5e1; }
 
     @media (hover: none), (pointer: coarse) {
@@ -172,22 +170,22 @@
   </div>
 
   <script>
-    const CONFIG = {
+    var CONFIG = {
       endpointBase: "https://script.google.com/macros/s/AKfycbyRF62OEmU2SFH3juvFeCmklF4nKLhFr-6VEGNFHES4ZCi5D0-1dOx7LK4fSs_fiDJN/exec",
       view: "marketmap"
     };
 
-    const $ = (id) => document.getElementById(id);
+    function $(id) { return document.getElementById(id); }
 
-    const TOUCH_UI =
+    var TOUCH_UI =
       window.matchMedia("(hover: none), (pointer: coarse)").matches ||
       ("ontouchstart" in window) ||
       (navigator.maxTouchPoints > 0);
 
-    let armedTouchCardId = null;
+    var armedTouchCardId = null;
 
     function setStatus(type, text) {
-      const el = $("status");
+      var el = $("status");
       el.className = "status" + (type ? " " + type : "");
       el.textContent = text;
     }
@@ -195,26 +193,38 @@
     function pct(n, d) { return d ? ((n / d) * 100).toFixed(1) + "%" : "0.0%"; }
 
     function buildApiUrl(base, params) {
-      const u = new URL(base);
-      Object.keys(params).forEach(k => u.searchParams.set(k, params[k]));
+      var u = new URL(base);
+      var keys = Object.keys(params);
+      for (var i = 0; i < keys.length; i++) u.searchParams.set(keys[i], params[keys[i]]);
       return u.toString();
     }
 
     function loadJsonp(url, callbackName) {
-      return new Promise((resolve, reject) => {
-        const script = document.createElement("script");
-        script.src = url;
-        script.async = true;
-        const timeout = setTimeout(() => { cleanup(); reject(new Error("JSONP request timed out")); }, 15000);
+      return new Promise(function(resolve, reject) {
+        var script = document.createElement("script");
+        var timeout = setTimeout(function() {
+          cleanup();
+          reject(new Error("JSONP timeout"));
+        }, 20000);
 
         function cleanup() {
           clearTimeout(timeout);
           script.remove();
-          try { delete window[callbackName]; } catch (e) {}
+          window[callbackName] = undefined;
         }
 
-        window[callbackName] = (data) => { cleanup(); resolve(data); };
-        script.onerror = () => { cleanup(); reject(new Error("Failed to load JSONP script")); };
+        window[callbackName] = function(data) {
+          cleanup();
+          resolve(data);
+        };
+
+        script.onerror = function() {
+          cleanup();
+          reject(new Error("JSONP script failed to load"));
+        };
+
+        script.src = url;
+        script.async = true;
         document.head.appendChild(script);
       });
     }
@@ -225,71 +235,88 @@
     }
 
     function toPassed(row) {
-      const raw = row["Passed"];
+      var raw = row["Passed"];
       if (typeof raw === "boolean") return raw;
       if (typeof raw === "number") return raw > 0;
-      const v = String(raw || "").trim().toLowerCase();
-      return ["1", "true", "yes", "y", "passed", "pass"].includes(v);
+      var v = String(raw || "").trim().toLowerCase();
+      return ["1", "true", "yes", "y", "passed", "pass"].indexOf(v) !== -1;
     }
 
     function normalizeLogoUrl(u) {
-      const v = String(u || "").trim();
+      var v = String(u || "").trim();
       if (!v) return "";
-      if (v.startsWith("//")) return "https:" + v;
-      if (v.startsWith("http://")) return "https://" + v.slice(7);
+      if (v.indexOf("//") === 0) return "https:" + v;
+      if (v.indexOf("http://") === 0) return "https://" + v.slice(7);
       return v;
     }
 
     function logoCandidates(company) {
-      const out = [];
-      const explicitA = normalizeLogoUrl(company["Logo link"]);
-      const explicitB = normalizeLogoUrl(company["logo"]);
-      if (explicitA) out.push(explicitA);
-      if (explicitB && explicitB !== explicitA) out.push(explicitB);
+      var out = [];
+      var a = normalizeLogoUrl(company["Logo link"]);
+      var b = normalizeLogoUrl(company["logo"]);
+      if (a) out.push(a);
+      if (b && b !== a) out.push(b);
 
-      const raw = String(company["Url"] || "").trim();
-      const withScheme = /^[a-z]+:\/\//i.test(raw) ? raw : (raw ? "https://" + raw : "");
+      var raw = String(company["Url"] || "").trim();
+      var withScheme = /^[a-z]+:\/\//i.test(raw) ? raw : (raw ? "https://" + raw : "");
       try {
-        const domain = new URL(withScheme).hostname.replace(/^www\./, "");
-        if (domain) {
-          out.push("https://logo.clearbit.com/" + encodeURIComponent(domain));
-          out.push("https://www.google.com/s2/favicons?sz=128&domain=" + encodeURIComponent(domain));
-          out.push("https://icons.duckduckgo.com/ip3/" + encodeURIComponent(domain) + ".ico");
-        }
+        var domain = new URL(withScheme).hostname.replace(/^www\./, "");
+        if (domain) out.push("https://www.google.com/s2/favicons?sz=128&domain=" + encodeURIComponent(domain));
       } catch (e) {}
 
-      return [...new Set(out)];
+      var uniq = [];
+      var seen = {};
+      for (var i = 0; i < out.length; i++) {
+        if (!seen[out[i]]) {
+          seen[out[i]] = true;
+          uniq.push(out[i]);
+        }
+      }
+      return uniq;
+    }
+
+    function escHtml(s) {
+      return String(s || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+    }
+
+    function formatNotesHtml(notesText) {
+      return escHtml(notesText || "")
+        .replace(/Decision And Reason/g, "<strong>Decision And Reason</strong>")
+        .replace(/\n/g, "<br>");
     }
 
     function positionTooltip(card, tip) {
-      const pad = 12;
-      const gap = 10;
-      const cardRect = card.getBoundingClientRect();
+      var pad = 12;
+      var gap = 10;
+      var cardRect = card.getBoundingClientRect();
 
-      const maxWidth = Math.max(280, Math.min(560, window.innerWidth - (pad * 2)));
+      var maxWidth = Math.max(280, Math.min(560, window.innerWidth - (pad * 2)));
       tip.style.width = maxWidth + "px";
       tip.style.maxHeight = Math.max(220, window.innerHeight - (pad * 2)) + "px";
 
-      const tipRect = tip.getBoundingClientRect();
+      var tipRect = tip.getBoundingClientRect();
 
-      let top = cardRect.top - tipRect.height - gap;
+      var top = cardRect.top - tipRect.height - gap;
       if (top < pad) top = cardRect.bottom + gap;
       top = Math.max(pad, Math.min(top, window.innerHeight - tipRect.height - pad));
 
-      let left = cardRect.left + (cardRect.width - tipRect.width) / 2;
+      var left = cardRect.left + (cardRect.width - tipRect.width) / 2;
       left = Math.max(pad, Math.min(left, window.innerWidth - tipRect.width - pad));
 
       tip.style.top = top + "px";
       tip.style.left = left + "px";
     }
 
-    const touchBackdrop = $("touch-note-backdrop");
-    const touchTitle = $("touch-note-title");
-    const touchBody = $("touch-note-body");
+    var touchBackdrop = $("touch-note-backdrop");
+    var touchTitle = $("touch-note-title");
+    var touchBody = $("touch-note-body");
 
     function showTouchNote(companyName, notesText) {
       touchTitle.textContent = companyName || "Call Notes";
-      touchBody.textContent = notesText || "";
+      touchBody.innerHTML = formatNotesHtml(notesText || "");
       touchBackdrop.classList.add("open");
       touchBackdrop.setAttribute("aria-hidden", "false");
       touchBackdrop.scrollTop = 0;
@@ -302,7 +329,7 @@
       document.body.style.overflow = "";
     }
 
-    touchBackdrop.addEventListener("click", (e) => {
+    touchBackdrop.addEventListener("click", function(e) {
       if (e.target === touchBackdrop) {
         hideTouchNote();
         armedTouchCardId = null;
@@ -310,39 +337,39 @@
     });
 
     function getNotesText(company) {
-      const callNotes = String(company["Call Notes"] || "").trim();
-      const decision = String(company["Decision And Reason"] || "").trim();
+      var callNotes = String(company["Call Notes"] || "").trim();
+      var decision = String(company["Decision And Reason"] || "").trim();
       if (!callNotes && !decision) return "";
       if (callNotes && decision) return "Call Notes\n\n" + callNotes + "\n\nDecision And Reason\n\n" + decision;
       return callNotes ? ("Call Notes\n\n" + callNotes) : ("Decision And Reason\n\n" + decision);
     }
 
     function makeCard(company, passed) {
-      const name = String(company["Company Name"] || "Unknown").trim();
-      const category = String(company["Category"] || "").trim();
-      const display = category ? (name + " (" + category + ")") : name;
-      const url = String(company["Url"] || "").trim();
-      const notesText = getNotesText(company);
-      const cardId = String(company["_id"] || display);
+      var name = String(company["Company Name"] || "Unknown").trim();
+      var category = String(company["Category"] || "").trim();
+      var display = category ? (name + " (" + category + ")") : name;
+      var url = String(company["Url"] || "").trim();
+      var notesText = getNotesText(company);
+      var cardId = String(company["_id"] || display);
 
-      const card = document.createElement("div");
+      var card = document.createElement("div");
       card.className = "card";
 
-      const wrap = document.createElement("div");
+      var wrap = document.createElement("div");
       wrap.className = "logoWrap";
 
-      const img = document.createElement("img");
+      var img = document.createElement("img");
       img.className = "logo";
       img.alt = display;
       img.loading = "lazy";
       img.decoding = "async";
 
-      const ph = document.createElement("div");
+      var ph = document.createElement("div");
       ph.className = "placeholder";
       ph.textContent = display;
 
-      const cands = logoCandidates(company);
-      let i = 0;
+      var cands = logoCandidates(company);
+      var i = 0;
 
       function setLogoVisible() {
         img.style.display = "block";
@@ -359,38 +386,19 @@
           setPlaceholderVisible();
           return;
         }
-
-        const src = cands[i++];
-        const probe = new Image();
-
-        const t = setTimeout(() => {
-          probe.onload = null;
-          probe.onerror = null;
-          tryNextLogo();
-        }, 3000);
-
-        probe.onload = () => {
-          clearTimeout(t);
-          img.src = src;
-          setLogoVisible();
-        };
-
-        probe.onerror = () => {
-          clearTimeout(t);
-          tryNextLogo();
-        };
-
-        probe.src = src;
+        img.src = cands[i++];
       }
 
+      img.onload = function() { setLogoVisible(); };
+      img.onerror = function() { tryNextLogo(); };
       setPlaceholderVisible();
       tryNextLogo();
 
-      const nameEl = document.createElement("div");
+      var nameEl = document.createElement("div");
       nameEl.className = "name";
       nameEl.textContent = display;
 
-      const tag = document.createElement("div");
+      var tag = document.createElement("div");
       tag.className = "tag";
       tag.textContent = passed ? "Pass" : "Advance";
 
@@ -401,24 +409,26 @@
       card.appendChild(tag);
 
       if (notesText) {
-        const tip = document.createElement("div");
+        var tip = document.createElement("div");
         tip.className = "tooltip";
-        tip.innerHTML = "<h4>Call Notes</h4>" + notesText;
+        tip.innerHTML = "<h4>Call Notes</h4>" + formatNotesHtml(notesText);
         card.appendChild(tip);
 
         if (!TOUCH_UI) {
-          card.addEventListener("mouseenter", () => {
+          card.addEventListener("mouseenter", function() {
             card.classList.add("tooltip-open");
-            requestAnimationFrame(() => positionTooltip(card, tip));
+            requestAnimationFrame(function() { positionTooltip(card, tip); });
           });
-          card.addEventListener("mousemove", () => {
+          card.addEventListener("mousemove", function() {
             if (card.classList.contains("tooltip-open")) positionTooltip(card, tip);
           });
-          card.addEventListener("mouseleave", () => card.classList.remove("tooltip-open"));
+          card.addEventListener("mouseleave", function() {
+            card.classList.remove("tooltip-open");
+          });
         }
       }
 
-      card.addEventListener("click", (e) => {
+      card.addEventListener("click", function(e) {
         if (!TOUCH_UI) {
           safeOpen(url);
           return;
@@ -446,12 +456,15 @@
     async function loadAndRender() {
       setStatus("", "Loading data...");
 
-      const cb = "cb_" + Math.random().toString(16).slice(2);
-      const url = buildApiUrl(CONFIG.endpointBase, { view: CONFIG.view, callback: cb, t: String(Date.now()) });
+      var url = buildApiUrl(CONFIG.endpointBase, {
+        view: CONFIG.view,
+        callback: "testCb",
+        t: String(Date.now())
+      });
 
-      let payload;
+      var payload;
       try {
-        payload = await loadJsonp(url, cb);
+        payload = await loadJsonp(url, "testCb");
       } catch (e) {
         setStatus("error", "Failed to load data: " + e.message);
         return;
@@ -462,9 +475,10 @@
         return;
       }
 
-      const contacted = Number(payload?.funnel?.contacted || 0);
-      const connected = Number(payload?.funnel?.connected || 0);
-      const callExecuted = Number(payload?.funnel?.callExecuted || 0);
+      var funnel = (payload && payload.funnel) ? payload.funnel : {};
+      var contacted = Number(funnel.contacted || 0);
+      var connected = Number(funnel.connected || 0);
+      var callExecuted = Number(funnel.callExecuted || 0);
 
       $("count-contacted").textContent = String(contacted);
       $("count-connected").textContent = String(connected);
@@ -472,20 +486,20 @@
       $("metric-connection-rate").textContent = pct(connected, contacted);
       $("metric-call-executed-rate").textContent = pct(callExecuted, contacted);
 
-      const rows = Array.isArray(payload.callExecutedCompanies) ? payload.callExecutedCompanies : [];
-      const passed = rows.filter(toPassed);
-      const advanced = rows.filter(r => !toPassed(r));
+      var rows = Array.isArray(payload.callExecutedCompanies) ? payload.callExecutedCompanies : [];
+      var passed = rows.filter(toPassed);
+      var advanced = rows.filter(function(r) { return !toPassed(r); });
 
       $("passed-count").textContent = passed.length + " companies";
       $("advanced-count").textContent = advanced.length + " companies";
 
-      const passedGrid = $("passed-grid");
-      const advancedGrid = $("advanced-grid");
+      var passedGrid = $("passed-grid");
+      var advancedGrid = $("advanced-grid");
       passedGrid.innerHTML = "";
       advancedGrid.innerHTML = "";
 
-      passed.forEach(c => passedGrid.appendChild(makeCard(c, true)));
-      advanced.forEach(c => advancedGrid.appendChild(makeCard(c, false)));
+      for (var i = 0; i < passed.length; i++) passedGrid.appendChild(makeCard(passed[i], true));
+      for (var j = 0; j < advanced.length; j++) advancedGrid.appendChild(makeCard(advanced[j], false));
 
       if (!passed.length) passedGrid.innerHTML = '<div class="status">No pass companies in call executed.</div>';
       if (!advanced.length) advancedGrid.innerHTML = '<div class="status">No advanced companies in call executed.</div>';
