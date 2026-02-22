@@ -5,77 +5,98 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Shane Wilson for Ibex: Winter 2026 Deal Flow</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", sans-serif; background: #fff; padding: 28px 14px 36px; color: #111827; }
-    .container { max-width: 1300px; margin: 0 auto; }
-
-    .header { text-align: center; margin-bottom: 18px; padding-bottom: 14px; border-bottom: 1px solid #e5e7eb; }
-    .header h1 { font-size: clamp(1.7rem, 4.2vw, 2.8rem); color: #5b35ba; margin-bottom: 6px; }
-    .subtitle { color: #6b7280; }
-
-    .nav { display: flex; justify-content: center; gap: 10px; margin: 12px 0 16px; flex-wrap: wrap; }
-    .nav a { text-decoration: none; padding: 8px 13px; border-radius: 999px; border: 1px solid #ddd6fe; background: #ede9fe; color: #5d2cc5; font-weight: 600; }
-    .nav a.active { background: #7c3aed; color: #fff; border-color: #7c3aed; }
-
-    .status { margin: 0 auto 14px; max-width: 920px; border: 1px solid #e5e7eb; background: #fff; padding: 11px 13px; border-radius: 10px; font-size: 14px; }
-    .status.error { border-color: #fecaca; background: #fff1f2; color: #991b1b; }
-    .status.ok { border-color: #bbf7d0; background: #ecfdf5; color: #065f46; }
-
-    .metrics { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; max-width: 760px; margin: 10px auto 16px; }
-    .metric { text-align: center; background: #fff; border: 1px solid #e9d5ff; border-radius: 12px; padding: 14px; }
-    .metric .v { font-size: clamp(1.4rem, 4vw, 2.2rem); color: #7c3aed; font-weight: 800; }
-    .metric .l { color: #6b7280; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; font-weight: 700; }
-
-    .funnel { max-width: 800px; margin: 6px auto 18px; }
-    .stage { position: relative; height: 95px; margin: 0 auto -6px; box-shadow: 0 6px 18px rgba(124,58,237,.14); }
-    .s1 { width: min(100%,760px); background: linear-gradient(135deg,#7c3aed,#a78bfa); clip-path: polygon(6% 0,94% 0,88% 100%,12% 100%); }
-    .s2 { width: min(92%,610px); background: linear-gradient(135deg,#8b5cf6,#c4b5fd); clip-path: polygon(8% 0,92% 0,84% 100%,16% 100%); }
-    .s3 { width: min(84%,460px); background: linear-gradient(135deg,#9333ea,#d8b4fe); clip-path: polygon(12% 0,88% 0,78% 100%,22% 100%); }
-    .sc { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #fff; }
-    .sc .n { font-size: clamp(1.3rem,4vw,2.4rem); font-weight: 800; }
-
-    .section { margin-top: 16px; }
-    .title { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; font-weight: 800; gap: 12px; }
-    .count { font-size: 12px; color: #6b7280; text-transform: uppercase; white-space: nowrap; }
-
-    .grid { display: grid; grid-template-columns: repeat(5,minmax(0,1fr)); gap: 10px; }
-    .card { border: 1px solid #e9d5ff; background: #fff; border-radius: 12px; padding: 12px 10px; min-height: 122px; text-align: center; cursor: pointer; position: relative; }
-    .logoWrap { width: 84px; height: 58px; margin: 0 auto 8px; border: 1px solid #eef0f4; border-radius: 9px; padding: 7px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-    .logo { width: 100%; height: 100%; object-fit: contain; display: none; }
-    .placeholder { font-size: 11px; color: #7c3aed; font-weight: 700; line-height: 1.2; }
-    .name { font-size: 12.5px; font-weight: 700; color: #374151; line-height: 1.25; }
-    .tag { margin-top: 6px; font-size: 10px; text-transform: uppercase; font-weight: 700; color: #5d2cc5; border: 1px solid #ddd6fe; background: #f5f3ff; border-radius: 999px; display: inline-block; padding: 2px 7px; }
-
-    .tooltip {
-      position: fixed; left: 12px; top: 12px; z-index: 9999; width: 560px; max-width: calc(100vw - 24px);
-      max-height: calc(100vh - 24px); overflow-y: auto; background: rgba(15, 23, 42, 0.96); color: #fff;
-      border-radius: 12px; padding: 12px 14px; box-shadow: 0 14px 28px rgba(0,0,0,0.35); line-height: 1.35;
-      text-align: left; font-size: 12px; white-space: pre-wrap; opacity: 0; visibility: hidden; pointer-events: none;
-      transform: translateY(6px); transition: opacity 120ms ease, transform 120ms ease, visibility 120ms ease;
+    :root {
+      --bg:#f8fafc; --ink:#111827; --muted:#6b7280; --line:#e5e7eb; --brand:#7c3aed;
     }
-    .tooltip h4 { font-size: 13px; margin-bottom: 6px; font-weight: 800; }
-    .tooltip-open .tooltip { opacity: 1; visibility: visible; transform: translateY(0); pointer-events: auto; }
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif; background:var(--bg); color:var(--ink); padding:20px 12px 28px; }
+    .container { max-width:1300px; margin:0 auto; }
+    .header { text-align:center; margin-bottom:18px; padding-bottom:14px; border-bottom:1px solid var(--line); }
+    h1 { font-size:clamp(1.6rem,4vw,2.6rem); color:#5b35ba; margin-bottom:8px; }
+    .subtitle { color:var(--muted); }
+    .nav { display:flex; justify-content:center; gap:10px; margin:12px 0 16px; flex-wrap:wrap; }
+    .nav a { text-decoration:none; padding:8px 13px; border-radius:999px; border:1px solid #ddd6fe; background:#ede9fe; color:#5d2cc5; font-weight:600; }
+    .nav a.active { background:var(--brand); color:#fff; border-color:var(--brand); }
 
-    .divider { border-top: 2px dashed #c4b5fd; margin: 20px 0 10px; }
+    .status { margin:0 auto 14px; max-width:900px; border:1px solid var(--line); background:#fff; padding:11px 13px; border-radius:10px; font-size:14px; }
+    .status.error { border-color:#fecaca; background:#fff1f2; color:#991b1b; }
+    .status.ok { border-color:#bbf7d0; background:#ecfdf5; color:#065f46; }
 
-    .touch-note-backdrop { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.45); z-index: 10050; display: none; padding: 16px; align-items: center; justify-content: center; }
-    .touch-note-backdrop.open { display: flex; }
-    .touch-note-modal { width: min(92vw, 680px); max-height: 82vh; overflow: auto; background: rgba(15, 23, 42, 0.97); color: #fff; border-radius: 14px; padding: 14px 16px; box-shadow: 0 18px 40px rgba(0,0,0,0.45); }
-    .touch-note-title { font-size: 14px; font-weight: 800; margin-bottom: 8px; }
-    .touch-note-body { white-space: pre-wrap; line-height: 1.35; font-size: 13px; }
-    .touch-note-hint { margin-top: 10px; font-size: 11px; color: #cbd5e1; }
+    .metrics { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; max-width:760px; margin:10px auto 16px; }
+    .metric { text-align:center; background:#fff; border:1px solid #e9d5ff; border-radius:12px; padding:14px; }
+    .metric .v { font-size:clamp(1.4rem,4vw,2.2rem); color:var(--brand); font-weight:800; }
+    .metric .l { color:var(--muted); font-size:12px; text-transform:uppercase; letter-spacing:.06em; font-weight:700; }
 
-    @media (hover: none), (pointer: coarse) { .tooltip { display: none !important; } }
-    @media (max-width:1100px) { .grid { grid-template-columns: repeat(3,minmax(0,1fr)); } }
-    @media (max-width:760px) { .metrics { grid-template-columns: 1fr; } .grid { grid-template-columns: repeat(2,minmax(0,1fr)); } }
-    @media (max-width:520px) { .grid { grid-template-columns: 1fr; } }
+    .funnel { max-width:800px; margin:6px auto 18px; }
+    .stage { position:relative; height:95px; margin:0 auto -6px; box-shadow:0 6px 18px rgba(124,58,237,.14); }
+    .s1 { width:min(100%,760px); background:linear-gradient(135deg,#7c3aed,#a78bfa); clip-path:polygon(6% 0,94% 0,88% 100%,12% 100%); }
+    .s2 { width:min(92%,610px); background:linear-gradient(135deg,#8b5cf6,#c4b5fd); clip-path:polygon(8% 0,92% 0,84% 100%,16% 100%); }
+    .s3 { width:min(84%,460px); background:linear-gradient(135deg,#9333ea,#d8b4fe); clip-path:polygon(12% 0,88% 0,78% 100%,22% 100%); }
+    .sc { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#fff; }
+    .sc .n { font-size:clamp(1.3rem,4vw,2.4rem); font-weight:800; }
+
+    .section { margin-top:14px; }
+    .title { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px; font-weight:800; }
+    .count { font-size:12px; color:var(--muted); text-transform:uppercase; }
+    .grid { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:10px; }
+    .card { border:1px solid #e9d5ff; background:#fff; border-radius:12px; padding:12px 10px; min-height:122px; text-align:center; cursor:pointer; position:relative; }
+    .logoWrap { width:84px; height:58px; margin:0 auto 8px; border:1px solid #eef0f4; border-radius:9px; padding:7px; display:flex; align-items:center; justify-content:center; }
+    .logo { width:100%; height:100%; object-fit:contain; display:none; }
+    .placeholder { font-size:11px; color:#7c3aed; font-weight:700; line-height:1.2; }
+    .name { font-size:12.5px; font-weight:700; color:#374151; line-height:1.25; }
+    .tag { margin-top:6px; font-size:10px; text-transform:uppercase; font-weight:700; color:#5d2cc5; border:1px solid #ddd6fe; background:#f5f3ff; border-radius:999px; display:inline-block; padding:2px 7px; }
+
+ .tooltip {
+  position: fixed;
+  z-index: 9999;
+  width: min(560px, calc(100vw - 24px));
+  max-height: calc(100vh - 24px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: rgba(15, 23, 42, 0.96);
+  color: #fff;
+  border-radius: 12px;
+  padding: 12px 14px;
+  box-shadow: 0 14px 28px rgba(0,0,0,0.35);
+  line-height: 1.35;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(6px);
+  transition: opacity 140ms ease, transform 140ms ease, visibility 140ms ease;
+}
+
+.card:hover .tooltip,
+.card.tooltip-open .tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+    .tooltip strong { display:block; margin-bottom:6px; }
+
+    @media (hover: hover) {
+      .card:hover .tooltip { opacity:1; pointer-events:auto; transform:translateX(var(--tip-x, -50%)) translateY(-2px); }
+    }
+
+    .card.show-tip .tooltip { opacity:1; pointer-events:auto; transform:translateX(var(--tip-x, -50%)) translateY(-2px); }
+
+    .divider { border-top:2px dashed #c4b5fd; margin:20px 0 10px; }
+
+    @media (max-width:1100px) { .grid { grid-template-columns:repeat(3,minmax(0,1fr)); } }
+    @media (max-width:760px) {
+      .metrics { grid-template-columns:1fr; }
+      .grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+    }
+    @media (max-width:520px) { .grid { grid-template-columns:1fr; } }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="header">
-      <h1>Shane Wilson for Ibex: Winter 2026 Deal Flow</h1>
-      <div class="subtitle">Evaluation Pipeline & Company Progression</div>
+      <h1 id="page-title">Shane Wilson for Ibex: Winter 2026 Deal Flow</h1>
+      <div class="subtitle" id="page-subtitle">Evaluation Pipeline &amp; Company Progression</div>
     </div>
 
     <div class="nav">
@@ -83,7 +104,7 @@
       <a class="active" href="sales_funnel.html">Deal Flow</a>
     </div>
 
-    <div id="status" class="status">Loading data...</div>
+    <div id="status" class="status">Loading data…</div>
 
     <div class="metrics">
       <div class="metric"><div class="v" id="metric-connection-rate">0.0%</div><div class="l">Connection Rate</div></div>
@@ -104,16 +125,8 @@
     <div class="divider"></div>
 
     <div class="section">
-      <div class="title"><span>Call Executed: Advance to Diligence</span><span class="count" id="advanced-count">0 companies</span></div>
-      <div class="grid" id="advanced-grid"></div>
-    </div>
-  </div>
-
-  <div id="touch-note-backdrop" class="touch-note-backdrop" aria-hidden="true">
-    <div class="touch-note-modal" role="dialog" aria-modal="true" aria-label="Call Notes">
-      <div class="touch-note-title" id="touch-note-title">Call Notes</div>
-      <div class="touch-note-body" id="touch-note-body"></div>
-      <div class="touch-note-hint">Tap the same company again to open its website.</div>
+      <div class="title"><span>Call Executed: Advance to Diligence</span><span class="count" id="not-passed-count">0 companies</span></div>
+      <div class="grid" id="not-passed-grid"></div>
     </div>
   </div>
 
@@ -124,8 +137,6 @@
     };
 
     const $ = (id) => document.getElementById(id);
-    const TOUCH_UI = window.matchMedia("(hover: none), (pointer: coarse)").matches || ("ontouchstart" in window) || (navigator.maxTouchPoints > 0);
-    let armedTouchCardId = null;
 
     function setStatus(type, text) {
       const el = $("status");
@@ -133,178 +144,177 @@
       el.textContent = text;
     }
 
+    function escapeHtml(str) {
+      return String(str ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
     function pct(n, d) { return d ? ((n / d) * 100).toFixed(1) + "%" : "0.0%"; }
 
     function buildApiUrl(base, params) {
       const u = new URL(base);
-      Object.keys(params).forEach((k) => u.searchParams.set(k, params[k]));
+      Object.keys(params).forEach(k => u.searchParams.set(k, params[k]));
       return u.toString();
     }
 
     function loadJsonp(url, callbackName) {
       return new Promise((resolve, reject) => {
         const script = document.createElement("script");
-        const timeout = setTimeout(() => { cleanup(); reject(new Error("JSONP timeout")); }, 20000);
+        script.src = url;
+        script.async = true;
+        const timer = setTimeout(() => { cleanup(); reject(new Error("JSONP timeout")); }, 15000);
 
         function cleanup() {
-          clearTimeout(timeout);
+          clearTimeout(timer);
           script.remove();
-          window[callbackName] = undefined;
+          try { delete window[callbackName]; } catch (e) {}
         }
 
         window[callbackName] = (data) => { cleanup(); resolve(data); };
-        script.onerror = () => { cleanup(); reject(new Error("JSONP script failed to load")); };
-        script.src = url;
-        script.async = true;
+        script.onerror = () => { cleanup(); reject(new Error("JSONP script failed")); };
         document.head.appendChild(script);
       });
     }
 
     function safeOpen(url) {
       if (!url) return;
-      try { window.open(new URL(url, location.href).href, "_blank", "noopener,noreferrer"); } catch (e) {}
+      try { window.open(new URL(url, location.href).href, "_blank", "noopener,noreferrer"); } catch {}
     }
+
+    function isTouchUi() {
+      return window.matchMedia("(hover: none), (pointer: coarse)").matches;
+    }
+
+    function closeAllTooltips(exceptCard) {
+      document.querySelectorAll(".card.show-tip").forEach((el) => {
+        if (exceptCard && el === exceptCard) return;
+        el.classList.remove("show-tip");
+      });
+    }
+
+function positionTooltip(card, tip) {
+  const pad = 12;
+  const gap = 10;
+  const cardRect = card.getBoundingClientRect();
+
+  // Set max height first, then measure final tooltip size
+  tip.style.maxHeight = `${Math.max(220, window.innerHeight - pad * 2)}px`;
+
+  const tipRect = tip.getBoundingClientRect();
+
+  // Prefer above; if not enough space, place below.
+  let top = cardRect.top - tipRect.height - gap;
+  if (top < pad) {
+    top = cardRect.bottom + gap;
+  }
+  // Final clamp to viewport
+  top = Math.max(pad, Math.min(top, window.innerHeight - tipRect.height - pad));
+
+  // Center horizontally, then clamp
+  let left = cardRect.left + (cardRect.width - tipRect.width) / 2;
+  left = Math.max(pad, Math.min(left, window.innerWidth - tipRect.width - pad));
+
+  tip.style.top = `${top}px`;
+  tip.style.left = `${left}px`;
+}
 
     function toPassed(row) {
       const raw = row["Passed"];
       if (typeof raw === "boolean") return raw;
       if (typeof raw === "number") return raw > 0;
       const v = String(raw || "").trim().toLowerCase();
-      return ["1", "true", "yes", "y", "passed", "pass"].includes(v);
+      return ["1","true","yes","y","passed"].includes(v);
     }
 
-    function normalizeLogoUrl(u) {
-      const v = String(u || "").trim();
-      if (!v) return "";
-      if (v.startsWith("//")) return "https:" + v;
-      if (v.startsWith("http://")) return "https://" + v.slice(7);
-      return v;
+    function normalizeHttpUrl(rawUrl) {
+      const s = String(rawUrl || "").trim();
+      if (!s) return "";
+      const withScheme = /^[a-z]+:\/\//i.test(s) ? s : ("https://" + s);
+      try {
+        const u = new URL(withScheme);
+        if (!/^https?:$/i.test(u.protocol)) return "";
+        return u.toString();
+      } catch (e) {
+        return "";
+      }
+    }
+
+    function deriveDomain(rawUrl) {
+      const u = normalizeHttpUrl(rawUrl);
+      if (!u) return "";
+      try { return new URL(u).hostname.replace(/^www\./i, ""); } catch (e) { return ""; }
     }
 
     function logoCandidates(company) {
       const out = [];
-      const fields = ["logo", "Logo link", "Logo link raw", "Logo link merged", "Logo", "logoUrl", "Logo URL"];
-      for (let i = 0; i < fields.length; i++) {
-        const v = normalizeLogoUrl(company[fields[i]]);
-        if (v) out.push(v);
+      [company["Logo link merged"], company["Logo link"], company["logo"]].forEach((raw) => {
+        const explicit = normalizeHttpUrl(raw || "");
+        if (explicit) out.push(explicit);
+      });
+
+      const domain = deriveDomain(company["Url"] || "");
+      if (domain) {
+        out.push("https://logo.clearbit.com/" + domain);
+        out.push("https://www.google.com/s2/favicons?sz=128&domain=" + encodeURIComponent(domain));
+        out.push("https://icons.duckduckgo.com/ip3/" + encodeURIComponent(domain) + ".ico");
       }
 
-      const raw = String(company["Url"] || "").trim();
-      const withScheme = /^[a-z]+:\/\//i.test(raw) ? raw : (raw ? "https://" + raw : "");
-      try {
-        const domain = new URL(withScheme).hostname.replace(/^www\./, "");
-        if (domain) out.push("https://www.google.com/s2/favicons?sz=128&domain=" + encodeURIComponent(domain));
-      } catch (e) {}
-
-      return [...new Set(out)];
-    }
-
-    function positionTooltip(card, tip) {
-      const pad = 12;
-      const gap = 10;
-      const cardRect = card.getBoundingClientRect();
-
-      const maxWidth = Math.max(280, Math.min(560, window.innerWidth - (pad * 2)));
-      tip.style.width = maxWidth + "px";
-      tip.style.maxHeight = Math.max(220, window.innerHeight - (pad * 2)) + "px";
-
-      const tipRect = tip.getBoundingClientRect();
-
-      let top = cardRect.top - tipRect.height - gap;
-      if (top < pad) top = cardRect.bottom + gap;
-      top = Math.max(pad, Math.min(top, window.innerHeight - tipRect.height - pad));
-
-      let left = cardRect.left + (cardRect.width - tipRect.width) / 2;
-      left = Math.max(pad, Math.min(left, window.innerWidth - tipRect.width - pad));
-
-      tip.style.top = top + "px";
-      tip.style.left = left + "px";
-    }
-
-    const touchBackdrop = $("touch-note-backdrop");
-    const touchTitle = $("touch-note-title");
-    const touchBody = $("touch-note-body");
-
-    function showTouchNote(companyName, notesText) {
-      touchTitle.textContent = companyName || "Call Notes";
-      touchBody.textContent = notesText || "";
-      touchBackdrop.classList.add("open");
-      touchBackdrop.setAttribute("aria-hidden", "false");
-      touchBackdrop.scrollTop = 0;
-      document.body.style.overflow = "hidden";
-    }
-
-    function hideTouchNote() {
-      touchBackdrop.classList.remove("open");
-      touchBackdrop.setAttribute("aria-hidden", "true");
-      document.body.style.overflow = "";
-    }
-
-    touchBackdrop.addEventListener("click", (e) => {
-      if (e.target === touchBackdrop) {
-        hideTouchNote();
-        armedTouchCardId = null;
-      }
-    });
-
-    function getNotesText(company) {
-      const callNotes = String(company["Call Notes"] || "").trim();
-      const decision = String(company["Decision And Reason"] || "").trim();
-      if (!callNotes && !decision) return "";
-      if (callNotes && decision) return "Call Notes\n\n" + callNotes + "\n\nDecision And Reason\n\n" + decision;
-      return callNotes ? ("Call Notes\n\n" + callNotes) : ("Decision And Reason\n\n" + decision);
+      return [...new Set(out.filter(Boolean))];
     }
 
     function makeCard(company, passed) {
       const name = String(company["Company Name"] || "Unknown").trim();
       const category = String(company["Category"] || "").trim();
-      const display = category ? (name + " (" + category + ")") : name;
+      const display = category ? `${name} (${category})` : name;
       const url = String(company["Url"] || "").trim();
-      const notesText = getNotesText(company);
-      const cardId = String(company["_id"] || display);
+      const notes = String(company["Call Notes"] || "").trim();
+      const decision = String(company["Decision And Reason"] || "").trim();
 
       const card = document.createElement("div");
       card.className = "card";
+      card.addEventListener("click", (e) => {
+        if (!isTouchUi()) {
+          safeOpen(url);
+          return;
+        }
+        if (card.classList.contains("show-tip")) {
+          safeOpen(url);
+          return;
+        }
+        e.preventDefault();
+        e.stopPropagation();
+        closeAllTooltips(card);
+        card.classList.add("show-tip");
+      });
 
       const wrap = document.createElement("div");
       wrap.className = "logoWrap";
-
       const img = document.createElement("img");
       img.className = "logo";
       img.alt = display;
       img.loading = "lazy";
-      img.decoding = "async";
-
+      img.referrerPolicy = "no-referrer";
       const ph = document.createElement("div");
       ph.className = "placeholder";
       ph.textContent = display;
 
       const cands = logoCandidates(company);
-let i = 0;
+      let i = 0;
+      function nextLogo() {
+        if (i >= cands.length) return false;
+        img.src = cands[i++];
+        return true;
+      }
 
-function setLogoVisible() {
-  img.style.display = "block";
-  ph.style.display = "none";
-}
-
-function setPlaceholderVisible() {
-  img.style.display = "none";
-  ph.style.display = "block";
-}
-
-function tryNextLogo() {
-  if (i >= cands.length) {
-    setPlaceholderVisible();
-    return;
-  }
-  img.src = cands[i++];
-}
-
-img.onload = () => setLogoVisible();
-img.onerror = () => tryNextLogo();
-
-setPlaceholderVisible();
-tryNextLogo();
+      img.onload = () => { img.style.display = "block"; ph.style.display = "none"; };
+      img.onerror = () => { if (!nextLogo()) { img.style.display = "none"; ph.style.display = "block"; } };
+      const hasInitialLogo = nextLogo();
+      img.style.display = hasInitialLogo ? "block" : "none";
+      ph.style.display = hasInitialLogo ? "none" : "block";
 
       const nameEl = document.createElement("div");
       nameEl.className = "name";
@@ -314,49 +324,39 @@ tryNextLogo();
       tag.className = "tag";
       tag.textContent = passed ? "Pass" : "Advance";
 
+      const tooltip = document.createElement("div");
+      tooltip.className = "tooltip";
+      const noteText = notes || "No call notes available.";
+      const decisionText = decision || "No decision notes available.";
+      tooltip.innerHTML =
+        "<strong>Call Notes</strong>" +
+        escapeHtml(noteText).replaceAll("\n", "<br>") +
+        "<br><br><strong>Decision And Reason</strong><br>" +
+        escapeHtml(decisionText).replaceAll("\n", "<br>");
+      tooltip.addEventListener("click", (e) => e.stopPropagation());
+
+      card.addEventListener("mouseenter", () => {
+        if (!isTouchUi()) positionTooltip(card, tooltip);
+      });
+
       wrap.appendChild(img);
       wrap.appendChild(ph);
       card.appendChild(wrap);
       card.appendChild(nameEl);
       card.appendChild(tag);
-
-      if (notesText) {
-        const tip = document.createElement("div");
-        tip.className = "tooltip";
-        tip.innerHTML = "<h4>Call Notes</h4>" + notesText;
-        card.appendChild(tip);
-
-        if (!TOUCH_UI) {
-          card.addEventListener("mouseenter", () => {
-            card.classList.add("tooltip-open");
-            requestAnimationFrame(() => positionTooltip(card, tip));
-          });
-          card.addEventListener("mousemove", () => {
-            if (card.classList.contains("tooltip-open")) positionTooltip(card, tip);
-          });
-          card.addEventListener("mouseleave", () => card.classList.remove("tooltip-open"));
-        }
-      }
-
-      card.addEventListener("click", (e) => {
-        if (!TOUCH_UI) { safeOpen(url); return; }
-        e.preventDefault();
-        e.stopPropagation();
-
-        if (!notesText) { safeOpen(url); return; }
-        if (armedTouchCardId === cardId) { safeOpen(url); return; }
-
-        armedTouchCardId = cardId;
-        showTouchNote(display, notesText);
-      });
-
+      card.appendChild(tooltip);
       return card;
     }
 
     async function loadAndRender() {
-      setStatus("", "Loading data...");
+      setStatus("", "Loading data…");
+
       const cb = "cb_" + Math.random().toString(16).slice(2);
-      const url = buildApiUrl(CONFIG.endpointBase, { view: CONFIG.view, callback: cb, t: String(Date.now()) });
+      const url = buildApiUrl(CONFIG.endpointBase, {
+        view: CONFIG.view,
+        callback: cb,
+        t: String(Date.now())
+      });
 
       let payload;
       try {
@@ -383,24 +383,26 @@ tryNextLogo();
 
       const rows = Array.isArray(payload.callExecutedCompanies) ? payload.callExecutedCompanies : [];
       const passed = rows.filter(toPassed);
-      const advanced = rows.filter((r) => !toPassed(r));
+      const notPassed = rows.filter(r => !toPassed(r));
 
       $("passed-count").textContent = passed.length + " companies";
-      $("advanced-count").textContent = advanced.length + " companies";
+      $("not-passed-count").textContent = notPassed.length + " companies";
 
       const passedGrid = $("passed-grid");
-      const advancedGrid = $("advanced-grid");
+      const npGrid = $("not-passed-grid");
       passedGrid.innerHTML = "";
-      advancedGrid.innerHTML = "";
+      npGrid.innerHTML = "";
 
-      passed.forEach((c) => passedGrid.appendChild(makeCard(c, true)));
-      advanced.forEach((c) => advancedGrid.appendChild(makeCard(c, false)));
+      passed.forEach(c => passedGrid.appendChild(makeCard(c, true)));
+      notPassed.forEach(c => npGrid.appendChild(makeCard(c, false)));
 
-      if (!passed.length) passedGrid.innerHTML = '<div class="status">No pass companies in call executed.</div>';
-      if (!advanced.length) advancedGrid.innerHTML = '<div class="status">No advanced companies in call executed.</div>';
+      if (!passed.length) passedGrid.innerHTML = '<div class="status">No passed companies in call executed.</div>';
+      if (!notPassed.length) npGrid.innerHTML = '<div class="status">No advanced companies in call executed.</div>';
 
       setStatus("ok", "Loaded successfully.");
     }
+
+    document.addEventListener("click", () => closeAllTooltips());
 
     loadAndRender();
   </script>
